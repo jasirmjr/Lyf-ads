@@ -1,26 +1,24 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Dashboard from './pages/Dashboard';
+import WorkReports from './pages/WorkReports';
+import EmployeeMgmt from './pages/EmployeeMgmt';
 
 function App() {
-  const [message, setMessage] = useState('Connecting to backend...');
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          setMessage(data.message + " DB Time: " + data.time);
-        } else {
-          setMessage('Failed to connect to DB: ' + data.error);
-        }
-      })
-      .catch(() => setMessage('Could not reach backend.'));
-  }, []);
-
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', textAlign: 'center' }}>
-      <h1>My Vercel Fullstack App</h1>
-      <p style={{ fontSize: '1.2rem', color: '#0070f3' }}>{message}</p>
-    </div>
+    <Router>
+      <div style={{ fontFamily: 'system-ui, sans-serif', minHeight: '100vh', background: '#fff' }}>
+        {/* The navigation bar stays persistent across all sub-pages */}
+        <Navbar />
+
+        {/* Dynamic viewport layout switches based on current URL path */}
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/reports" element={<WorkReports />} />
+          <Route path="/employees" element={<EmployeeMgmt />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

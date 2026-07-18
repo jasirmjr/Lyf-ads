@@ -1,0 +1,86 @@
+.pageContainer {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  gap: 2rem;
+}
+
+.formSection {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e2e2;
+  height: fit-content;
+}
+
+.formGroup {
+  margin-bottom: 12px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.inputField, .selectField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 10px;
+  background: #0070f3;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.submitBtn:hover {
+  background: #0056b3;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.employeeTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.employeeTable th {
+  background: #f4f4f4;
+  padding: 12px;
+  border-bottom: 2px solid #ddd;
+  font-weight: 600;
+}
+
+.employeeTable td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.badge-hr { background: #ffebee; color: #c62828; }
+.badge-manager { background: #e8f5e9; color: #2e7d32; }
+.badge-employee { background: #e3f2fd; color: #1565c0; }

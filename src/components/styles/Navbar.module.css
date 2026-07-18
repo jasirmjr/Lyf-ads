@@ -1,0 +1,25 @@
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  background: #111;
+  padding: 1rem 2rem;
+  align-items: center;
+}
+
+.title {
+  color: #0070f3;
+  margin: 0;
+  margin-right: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #0070f3;
+}
