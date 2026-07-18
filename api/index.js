@@ -83,27 +83,33 @@ app.get('/api/reports', async (req, res) => {
 });
 
 
-// POST: Add a new employee record
+//add employee
 app.post('/api/employees', async (req, res) => {
-  const { first_name, last_name, email, role, department_id } = req.body;
+  // We accept 'name' (Full Name) and 'phone' now
+  const { name, email, role, phone, department_id } = req.body;
 
-  if (!first_name || !last_name || !email) {
-    return res.status(400).json({ error: 'First name, last name, and email are required fields.' });
+  if (!name || !email) {
+    return res.status(400).json({ error: 'Name and email are required fields.' });
   }
+
+  // Split full name into first and last name for your existing table structure
+  const nameParts = name.trim().split(' ');
+  const first_name = nameParts[0];
+  const last_name = nameParts.slice(1).join(' ') || '';
 
   try {
     const queryText = `
-      INSERT INTO employees (first_name, last_name, email, role, department_id)
-      VALUES ($1, $2, $3, COALESCE($4, 'employee'), $5)
+      INSERT INTO employees (first_name, last_name, email, role, phone, department_id)
+      VALUES ($1, $2, $3, COALESCE($4, 'employee'), $5, $6)
       RETURNING *;
     `;
-    const values = [first_name, last_name, email, role, department_id || null];
+    const values = [first_name, last_name, email, role, phone || null, department_id || null];
     const result = await pool.query(queryText, values);
     
     res.status(201).json({ status: 'success', data: result.rows[0] });
   } catch (err) {
     console.error(err);
-    if (err.code === '23505') { // PostgreSQL Unique Violation error code
+    if (err.code === '23505') {
       return res.status(400).json({ error: 'An employee with this email address already exists.' });
     }
     res.status(500).json({ error: 'Database transaction failed.' });
@@ -124,6 +130,49 @@ app.get('/api/employees', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to retrieve employee listing.' });
+  }
+});
+
+
+// POST: Unified Login Verification Route
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  try {
+    // 1. Check if the user exists in the database by email
+    const result = await pool.query(
+      'SELECT id, first_name, last_name, email, role FROM employees WHERE email = $1',
+      [email.trim().toLowerCase()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'No user found with this email address.' });
+    }
+
+    const user = result.rows[0];
+
+    // 2. Simple password check for demonstration/testing
+    if (password !== 'admin123') {
+      return res.status(401).json({ error: 'Incorrect password.' });
+    }
+
+    // Success: Return user profile data and role category back to frontend
+    res.json({
+      status: 'success',
+      user: {
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+        role: user.role // 'hr', 'manager', or 'employee'
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server authentication database failure.' });
   }
 });
 

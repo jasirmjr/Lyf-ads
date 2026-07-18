@@ -1,0 +1,87 @@
+.pageContainer {
+  /* Removed layout centering values to sit beautifully inside right panel viewport */
+  max-width: 100%;
+}
+
+.dashboardCard {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  color: #4b5563;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 2rem 0;
+}
+
+.sectionTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.actionCardActive {
+  padding: 1.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f9f9f9;
+  transition: all 0.2s ease;
+}
+
+.actionCardActive:hover {
+  border-color: #0070f3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.05);
+}
+
+.cardTitleActive {
+  margin: 0 0 0.5rem 0;
+  color: #0070f3;
+  font-size: 1.1rem;
+}
+
+.actionCardDisabled {
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  opacity: 0.6;
+}
+
+.cardTitleDisabled {
+  margin: 0 0 0.5rem 0;
+  color: #374151;
+  font-size: 1.1rem;
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.4;
+}

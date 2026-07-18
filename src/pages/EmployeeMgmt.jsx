@@ -5,13 +5,12 @@ export default function EmployeeMgmt() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Controlled form values
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
     role: 'employee',
-    department_id: '1' // Pre-mapped to Engineering from our seed step
+    phone: '',
+    department_id: '1'
   });
 
   const fetchEmployees = async () => {
@@ -23,7 +22,7 @@ export default function EmployeeMgmt() {
         setEmployees(json.data);
       }
     } catch (err) {
-      console.error('Error contacting system directory API:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -40,7 +39,6 @@ export default function EmployeeMgmt() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     try {
       const res = await fetch('/api/employees', {
         method: 'POST',
@@ -52,33 +50,28 @@ export default function EmployeeMgmt() {
       });
       
       const json = await res.json();
-      
       if (json.status === 'success') {
-        alert('Employee onboarding recorded successfully!');
-        setFormData({ first_name: '', last_name: '', email: '', role: 'employee', department_id: '1' });
-        fetchEmployees(); // Live update directory table UI view panel
+        alert('Employee onboarded successfully!');
+        setFormData({ name: '', email: '', role: 'employee', phone: '', department_id: '1' });
+        fetchEmployees();
       } else {
-        alert(json.error || 'Onboarding registration failed.');
+        alert(json.error || 'Submission error');
       }
     } catch (err) {
-      alert('Network failure processing transaction: ' + err.message);
+      alert(err.message);
     }
   };
 
   return (
     <div className={styles.pageContainer}>
-      {/* LEFT COLUMN - ADD EMPLOYEE FORM */}
+      {/* REDESIGNED FORM CARD */}
       <section className={styles.formSection}>
-        <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Onboard Employee</h3>
+        <h3 className={styles.formTitle}>Onboard Employee</h3>
         <form onSubmit={handleSubmit}>
+          
           <div className={styles.formGroup}>
-            <label>First Name</label>
-            <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required className={styles.inputField} placeholder="Jane" />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Last Name</label>
-            <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required className={styles.inputField} placeholder="Doe" />
+            <label>Full Name</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. Jane Doe" />
           </div>
 
           <div className={styles.formGroup}>
@@ -87,7 +80,12 @@ export default function EmployeeMgmt() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>System Permissions Role</label>
+            <label>Mobile Number</label>
+            <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className={styles.inputField} placeholder="+1 (555) 000-0000" />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Role</label>
             <select name="role" value={formData.role} onChange={handleChange} className={styles.selectField}>
               <option value="employee">Employee</option>
               <option value="manager">Manager</option>
@@ -96,10 +94,10 @@ export default function EmployeeMgmt() {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Primary Assigned Department</label>
+            <label>Department</label>
             <select name="department_id" value={formData.department_id} onChange={handleChange} className={styles.selectField}>
-              <option value="1">Engineering (ID: 1)</option>
-              <option value="2">Human Resources (ID: 2)</option>
+              <option value="1">Engineering</option>
+              <option value="2">Human Resources</option>
             </select>
           </div>
 
@@ -107,23 +105,20 @@ export default function EmployeeMgmt() {
         </form>
       </section>
 
-      {/* RIGHT COLUMN - DIRECTORY DATA LIST TABLE */}
+      {/* DIRECTORY VIEW PANEL */}
       <section className={styles.tableContainer}>
-        <h3 style={{ marginTop: 0 }}>Active Corporate Directory</h3>
-        
+        <h3 style={{ marginTop: 0, marginBottom: '1rem' }}>Active Corporate Directory</h3>
         {loading ? (
-          <p>Syncing staff information database lists...</p>
-        ) : employees.length === 0 ? (
-          <p style={{ color: '#666', fontStyle: 'italic' }}>No employee records found in your environment instance setup.</p>
+          <p>Loading directory...</p>
         ) : (
           <table className={styles.employeeTable}>
             <thead>
               <tr>
-                <th>System ID</th>
+                <th>ID</th>
                 <th>Full Name</th>
-                <th>Email Address</th>
+                <th>Email</th>
+                <th>Phone</th>
                 <th>Department</th>
-                <th>Access Status Role</th>
               </tr>
             </thead>
             <tbody>
@@ -132,12 +127,8 @@ export default function EmployeeMgmt() {
                   <td><code>#{emp.id}</code></td>
                   <td><strong>{emp.first_name} {emp.last_name}</strong></td>
                   <td>{emp.email}</td>
+                  <td>{emp.phone || '—'}</td>
                   <td>{emp.department_name || 'Unassigned'}</td>
-                  <td>
-                    <span className={`${styles.roleBadge} ${styles['badge-' + emp.role]}`}>
-                      {emp.role}
-                    </span>
-                  </td>
                 </tr>
               ))}
             </tbody>

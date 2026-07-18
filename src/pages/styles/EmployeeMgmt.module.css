@@ -1,86 +1,100 @@
 .pageContainer {
-  padding: 2rem;
+  padding: 1.5rem;
   display: grid;
-  grid-template-columns: 1fr 2.5fr;
-  gap: 2rem;
+  grid-template-columns: 320px 1fr;
+  gap: 2.5rem;
+  align-items: start;
 }
 
 .formSection {
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e2e2;
-  height: fit-content;
+  background: #ffffff;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.formTitle {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: left; /* Clear left-alignment */
 }
 
 .formGroup {
-  margin-bottom: 12px;
+  margin-bottom: 1.25rem;
+  text-align: left; /* Keep inputs and labels aligned left */
 }
 
 .formGroup label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #4b5563;
 }
 
 .inputField, .selectField {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   box-sizing: border-box;
+  font-size: 0.9rem;
+  color: #111827;
+  background-color: #fff;
+  transition: border-color 0.15s ease;
+}
+
+.inputField:focus, .selectField:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
 }
 
 .submitBtn {
   width: 100%;
-  padding: 10px;
-  background: #0070f3;
+  padding: 0.75rem;
+  background: #111827; /* Dark elegant button matching the dashboard accent color */
   color: #fff;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  border-radius: 4px;
-  margin-top: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  transition: background-color 0.15s ease;
 }
 
 .submitBtn:hover {
-  background: #0056b3;
+  background: #1f2937;
 }
 
+/* Table styles */
 .tableContainer {
-  overflow-x: auto;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .employeeTable {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  margin-top: 1rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .employeeTable th {
-  background: #f4f4f4;
   padding: 12px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
   font-weight: 600;
 }
 
 .employeeTable td {
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f3f4f6;
 }
-
-.roleBadge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  text-transform: capitalize;
-}
-
-.badge-hr { background: #ffebee; color: #c62828; }
-.badge-manager { background: #e8f5e9; color: #2e7d32; }
-.badge-employee { background: #e3f2fd; color: #1565c0; }
