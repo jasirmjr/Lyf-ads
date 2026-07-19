@@ -1,58 +1,74 @@
 .pageContainer {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 }
 
 .formSection {
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e2e2;
-  height: fit-content;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-.inputField, .textareaField {
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.inputField, .selectField, .disabledField {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   box-sizing: border-box;
+  font-size: 0.9rem;
 }
 
-.textareaField {
-  min-height: 80px;
+.disabledField {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
 }
 
 .submitBtn {
-  width: 100%;
-  padding: 10px;
-  background: #0070f3;
+  padding: 0.75rem 2rem;
+  background: #111827;
   color: #fff;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  border-radius: 4px;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
 }
 
 .submitBtn:hover {
-  background: #0056b3;
+  background: #1f2937;
 }
 
-.headerRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.reportCard {
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.logsSection {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }

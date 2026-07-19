@@ -1,0 +1,110 @@
+.pageContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.cardSection {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.formRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.inputField {
+  flex: 1;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.selectField {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.submitBtn {
+  padding: 8px 16px;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.submitBtn:hover {
+  background: #374151;
+}
+
+.orgMapItem {
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 10px;
+}
+
+.roleList {
+  margin: 5px 0 0 15px;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.emptyRole {
+  font-style: italic;
+  color: #9ca3af;
+}
+
+.deptHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inlineDeleteBtn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.inlineDeleteBtn:hover {
+  opacity: 1;
+  background-color: #fee2e2;
+}
+
+.roleItemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.roleItemRow:hover {
+  background-color: #f9fafb;
+}

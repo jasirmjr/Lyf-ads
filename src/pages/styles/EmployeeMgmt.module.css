@@ -1,17 +1,16 @@
 .pageContainer {
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2.5rem;
-  align-items: start;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .formSection {
   background: #ffffff;
-  padding: 2rem 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .formTitle {
@@ -19,18 +18,26 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;
-  text-align: left; /* Clear left-alignment */
+}
+
+/* Arrange form inputs in a responsive 3-column row grid */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  align-items: end;
 }
 
 .formGroup {
-  margin-bottom: 1.25rem;
-  text-align: left; /* Keep inputs and labels aligned left */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
 }
 
 .formGroup label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.85rem;
   color: #4b5563;
 }
@@ -44,37 +51,29 @@
   font-size: 0.9rem;
   color: #111827;
   background-color: #fff;
-  transition: border-color 0.15s ease;
-}
-
-.inputField:focus, .selectField:focus {
-  outline: none;
-  border-color: #0070f3;
-  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
 }
 
 .submitBtn {
-  width: 100%;
-  padding: 0.75rem;
-  background: #111827; /* Dark elegant button matching the dashboard accent color */
+  padding: 0.7rem 2rem;
+  background: #111827;
   color: #fff;
   border: none;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: 6px;
-  margin-top: 0.5rem;
   transition: background-color 0.15s ease;
+  height: 38px; /* Perfectly balances input element heights */
 }
 
 .submitBtn:hover {
   background: #1f2937;
 }
 
-/* Table styles */
+/* Directory Layout styling */
 .tableContainer {
   background: #ffffff;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -88,13 +87,29 @@
 }
 
 .employeeTable th {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 10px;
+  border-bottom: 2px solid #e5e7eb;
   color: #4b5563;
   font-weight: 600;
 }
 
 .employeeTable td {
-  padding: 12px;
+  padding: 12px 10px;
   border-bottom: 1px solid #f3f4f6;
+}
+
+.deleteBtn {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
 }

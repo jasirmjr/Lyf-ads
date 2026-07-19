@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import UserDashboard from './pages/UserDashboard';
 import WorkReports from './pages/WorkReports';
 import EmployeeMgmt from './pages/EmployeeMgmt';
+import OrgSettings from './pages/OrgSettings';
 
 function App() {
   const [user, setUser] = useState(null); // Holds { id, name, email, role }
@@ -36,13 +37,12 @@ function App() {
 
         <main style={contentArea}>
           <Routes>
-            {/* Directs to the correct homepage layout card dynamically */}
             <Route path="/" element={isAdmin ? <Dashboard /> : <UserDashboard user={user} />} />
-            
             <Route path="/reports" element={<WorkReports user={user} />} />
             
-            {/* Hard wall blocks regular employees from routing to management tools */}
+            {/* Protected Admin Modules */}
             <Route path="/employees" element={isAdmin ? <EmployeeMgmt /> : <Navigate to="/" replace />} />
+            <Route path="/settings" element={isAdmin ? <OrgSettings /> : <Navigate to="/" replace />} />
             
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -35,6 +35,9 @@ export default function Navbar({ user }) {
               <NavLink to="/employees" className={getLinkClass}>
                 👥 Employees
               </NavLink>
+              <NavLink to="/settings" className={getLinkClass}>
+                ⚙️ Org Settings
+              </NavLink>
             </>
           )}
         </div>
