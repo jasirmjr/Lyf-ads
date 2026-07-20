@@ -55,9 +55,9 @@ export default function Navbar({ user, onUserUpdate }) {
   return (
     <>
       {/* 1. Left Sidebar Navigation Container */}
-      <div className={styles.sidebarContainer || styles.sidebar}>
-        <div className={styles.logoRow || styles.logo}>
-          <span className={styles.appTitle || styles.logoText}>DrewHub</span>
+      <div className={styles.sidebar}>
+        <div className={styles.logoRow}>
+          <span className={styles.logoText}>DrewHub</span>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -69,15 +69,15 @@ export default function Navbar({ user, onUserUpdate }) {
           {isMobileMenuOpen ? '✕' : '☰'}
         </button>
 
-        <nav className={`${styles.navMenu || styles.nav} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
-          <div className={styles.sectionHeader || styles.sectionTitle}>OPERATIONS</div>
+        <nav className={`${styles.navMenu} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
+          <div className={styles.sectionHeader}>OPERATIONS</div>
           <NavLink to="/reports" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
              Daily Reports
           </NavLink>
           
           {isAdmin && (
             <>
-              <div className={styles.sectionHeader || styles.sectionTitle}>HUMAN RESOURCES</div>
+              <div className={styles.sectionHeader}>HUMAN RESOURCES</div>
               <NavLink to="/employees" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                 👥 Employees
               </NavLink>
@@ -89,7 +89,7 @@ export default function Navbar({ user, onUserUpdate }) {
         </nav>
 
         {/* 2. User Row with Inline Edit Button */}
-        <div className={styles.profileRow || styles.userProfile} style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', padding: '1rem 0', display: 'flex', alignItems: 'center', justifycontent: 'space-between' }}>
+        <div className={styles.profileRow} style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', padding: '1rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '1.1rem' }}>👤</span>
             <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#111827' }}>{user?.name}</span>
@@ -103,6 +103,15 @@ export default function Navbar({ user, onUserUpdate }) {
             Edit
           </button>
         </div>
+
+        {/* Mobile Profile Button (visible only on mobile) */}
+        <button 
+          className={styles.mobileProfileButton}
+          onClick={handleOpenModal}
+          aria-label="Edit profile"
+        >
+          👤
+        </button>
       </div>
 
       {/* 3. FLOATING EDIT PROFILE DIALOG OVERLAY MODAL */}

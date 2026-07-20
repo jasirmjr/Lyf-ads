@@ -31,14 +31,20 @@
     border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
+    z-index: 1000;
+  }
+
+  .logoRow {
+    margin-bottom: 0;
+    margin-right: 1rem;
   }
 
   .navMenu {
-    display: none;
+    display: none !important;
   }
 
   .navMenu.mobileOpen {
-    display: flex;
+    display: flex !important;
     position: absolute;
     top: 100%;
     left: 0;
@@ -48,12 +54,18 @@
     padding: 1rem;
     border-bottom: 1px solid #e5e7eb;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 999;
   }
 
   .profileRow {
     margin-top: 0;
     border-top: none;
     padding: 0;
+    display: none !important;
+  }
+
+  .sectionHeader {
+    margin-top: 0.5rem;
   }
 }
 
@@ -62,6 +74,19 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 2rem;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.navMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .logoText {
@@ -111,6 +136,15 @@
 }
 
 .footerUser {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.profileRow {
   margin-top: auto;
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
@@ -212,7 +246,21 @@
     margin-right: 1rem;
   }
 
-  .appTitle {
+  .logoText {
     font-size: 1.1rem;
   }
+
+  .mobileProfileButton {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+  }
+}
+
+.mobileProfileButton {
+  display: none;
 }
