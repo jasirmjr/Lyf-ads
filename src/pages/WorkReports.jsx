@@ -5,8 +5,19 @@ export default function WorkReports({ user }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 1. Dashboard Active Grid Views States
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [statusFilter, setStatusFilter] = useState('All'); 
+
+  // 2. NEW: PDF Advanced Filter Target Configuration States
+  const [pdfTimeMode, setPdfTimeMode] = useState('SpecificDay'); // 'SpecificDay' or 'MonthView'
+  const [pdfSelectedDate, setPdfSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [pdfSelectedMonth, setPdfSelectedMonth] = useState(new Date().toISOString().split('Y-m')[0].substring(0, 7)); // e.g., '2026-07'
+  const [pdfStatusFilter, setPdfStatusFilter] = useState('All'); // 'All', 'Submitted', 'Pending'
+  const [isPrinting, setIsPrinting] = useState(false);
+
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0], // Default to current date string
+    date: new Date().toISOString().split('T')[0],
     project_name: '',
     work_status: 'Completed',
     start_time: '09:00',
@@ -14,27 +25,26 @@ export default function WorkReports({ user }) {
     remarks: ''
   });
 
-    const fetchReports = async () => {
-      if (!user) return;
-      
-      try {
-        setLoading(true);
-        // Append query parameters so the backend knows who is asking for the logs
-        const res = await fetch(`/api/reports?employee_id=${user.id}&role=${user.role}`);
-        const json = await res.json();
-        if (json.status === 'success') {
-          setReports(json.data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  const fetchReports = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      // Fetch data based on screen display date picker
+      const res = await fetch(`/api/reports?employee_id=${user.id}&role=${user.role}&date=${selectedDate}`);
+      const json = await res.json();
+      if (json.status === 'success') {
+        setReports(json.data);
       }
-    };
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [selectedDate, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,13 +57,9 @@ export default function WorkReports({ user }) {
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          employee_id: user.id
-        })
+        body: JSON.stringify({ ...formData, employee_id: user.id })
       });
-      const json = await res.json();
-      if (json.status === 'success') {
+      if (res.ok) {
         alert('Daily work report logged successfully!');
         setFormData({
           date: new Date().toISOString().split('T')[0],
@@ -70,46 +76,77 @@ export default function WorkReports({ user }) {
     }
   };
 
+  const isHRView = user?.role === 'hr' || user?.role === 'manager';
+
+  // Normal Screen Filtering Logic
+  const filteredReports = reports.filter((r) => {
+    if (!isHRView || statusFilter === 'All') return true;
+    return r.submission_status === statusFilter;
+  });
+
+  // NEW: Advanced PDF Generation Engine
+  const triggerPDFDownload = async () => {
+    try {
+      setLoading(true);
+      
+      let fetchUrl = `/api/reports?employee_id=${user.id}&role=${user.role}`;
+      if (pdfTimeMode === 'SpecificDay') {
+        fetchUrl += `&date=${pdfSelectedDate}`;
+      } else {
+        fetchUrl += `&date=${pdfSelectedMonth}-01&range=month`; 
+      }
+
+      const res = await fetch(fetchUrl);
+      const json = await res.json();
+      
+      if (json.status === 'success') {
+        let rawPdfData = json.data;
+
+        if (pdfTimeMode === 'MonthView') {
+          rawPdfData = rawPdfData.filter(r => r.date && r.date.startsWith(pdfSelectedMonth));
+        }
+
+        const targetedPdfRows = rawPdfData.filter(r => {
+          if (pdfStatusFilter === 'All') return true;
+          return r.submission_status === pdfStatusFilter;
+        });
+
+        if (targetedPdfRows.length === 0) {
+          alert('No report criteria entries found matching your PDF selection.');
+          fetchReports();
+          return;
+        }
+
+        // CRITICAL FIX: Turn on printing mode layouts, swap data rows, then execute print
+        setReports(targetedPdfRows);
+        setIsPrinting(true); 
+
+        setTimeout(() => {
+          window.print();
+          setIsPrinting(false); // Reset layout rules back to normal screen standards
+          fetchReports(); 
+        }, 400);
+      }
+    } catch (err) {
+      alert('Failed to generate document metrics.');
+      setIsPrinting(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={styles.pageContainer}>
-      {/* EXPANDED SUBMISSION CARD */}
+      {/* REPORT SUBMISSION CARD */}
       <section className={styles.formSection}>
         <h2 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Submit Daily Report</h2>
         <form onSubmit={handleSubmit}>
+          {/* Form groups remain as built previously */}
           <div className={styles.formGrid}>
-            
-            <div className={styles.formGroup}>
-              <label>Employee Name</label>
-              <input type="text" className={styles.disabledField} value={user?.name || ''} disabled />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Department</label>
-              <input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Date</label>
-              <input 
-                type="date" 
-                name="date" 
-                value={formData.date} 
-                onChange={handleChange} 
-                
-                // CRITICAL: Lock the calendar picker strictly to today's date
-                min={new Date().toISOString().split('T')[0]}
-                max={new Date().toISOString().split('T')[0]}
-                
-                required 
-                className={styles.inputField} 
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Task / Project Name</label>
-              <input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. CoreHR Authentication" />
-            </div>
-
+            <div className={styles.formGroup}><label>Employee Name</label><input type="text" className={styles.disabledField} value={user?.name || ''} disabled /></div>
+            <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled /></div>
+            <div className={styles.formGroup}><label>Date</label><input type="date" name="date" value={formData.date} min={new Date().toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} required className={styles.inputField} /></div>
+            <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. CoreHR Authentication" /></div>
             <div className={styles.formGroup}>
               <label>Work Status</label>
               <select name="work_status" value={formData.work_status} onChange={handleChange} className={styles.selectField}>
@@ -119,52 +156,89 @@ export default function WorkReports({ user }) {
                 <option value="On Hold">On Hold</option>
               </select>
             </div>
-
-            <div className={styles.formGroup}>
-              <label>Start Time</label>
-              <input type="time" name="start_time" value={formData.start_time} onChange={handleChange} required className={styles.inputField} />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>End Time</label>
-              <input type="time" name="end_time" value={formData.end_time} onChange={handleChange} required className={styles.inputField} />
-            </div>
-
-            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-              <label>Remarks / Notes</label>
-              <textarea name="remarks" value={formData.remarks} onChange={handleChange} className={styles.inputField} style={{ minHeight: '60px' }} placeholder="Detail specific items completed or bottlenecks encountered..." />
-            </div>
-
+            <div className={styles.formGroup}><label>Start Time</label><input type="time" name="start_time" value={formData.start_time} onChange={handleChange} required className={styles.inputField} /></div>
+            <div className={styles.formGroup}><label>End Time</label><input type="time" name="end_time" value={formData.end_time} onChange={handleChange} required className={styles.inputField} /></div>
+            <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Remarks / Notes</label><textarea name="remarks" value={formData.remarks} onChange={handleChange} className={styles.inputField} style={{ minHeight: '60px' }} placeholder="Detail specific items completed..." /></div>
           </div>
           <button type="submit" className={styles.submitBtn}>Submit Report</button>
         </form>
       </section>
 
-      {/* HISTORICAL WORK LOG VIEW TABLE */}
+      {/* TRACKER & EXPORT CONTROL INTERFACE MODULE */}
       <section className={styles.logsSection}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-          <h3 style={{ margin: 0 }}>
-            {user?.role === 'hr' || user?.role === 'manager' ? "Today's Attendance & Report Status" : "My Work Logs History"}
-          </h3>
-          {user?.role === 'hr' && (
-            <span style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: '500' }}>
-              📅 Target Date: {new Date().toLocaleDateString()} (Today)
-            </span>
-          )}
-        </div>
+        <h3 style={{ marginTop: 0, marginBottom: '1.25rem' }}>
+          {isHRView ? 'Team Attendance & Report Status' : 'My Work Logs History'}
+        </h3>
 
+        {/* NEW: ADVANCED PDF EXPORT CONFIGURATION PANEL (HR Eye-Level View Only) */}
+        {isHRView && (
+          <div className={styles.pdfControlBox}>
+            <div className={styles.filterGroup}>
+              <label>📅 PDF Time Scope:</label>
+              <select value={pdfTimeMode} onChange={e => setPdfTimeMode(e.target.value)} className={styles.filterSelect}>
+                <option value="SpecificDay">Specific Single Day</option>
+                <option value="MonthView">Entire Month (Day-by-Day)</option>
+              </select>
+            </div>
+
+            {pdfTimeMode === 'SpecificDay' ? (
+              <div className={styles.filterGroup}>
+                <label>Target Day:</label>
+                <input type="date" value={pdfSelectedDate} onChange={e => setPdfSelectedDate(e.target.value)} className={styles.filterDateInput} />
+              </div>
+            ) : (
+              <div className={styles.filterGroup}>
+                <label>Target Month:</label>
+                <input type="month" value={pdfSelectedMonth} onChange={e => setPdfSelectedMonth(e.target.value)} className={styles.filterDateInput} />
+              </div>
+            )}
+
+            <div className={styles.filterGroup}>
+              <label>⚡ Report Filters:</label>
+              <select value={pdfStatusFilter} onChange={e => setPdfStatusFilter(e.target.value)} className={styles.filterSelect}>
+                <option value="All">All Statuses (Pending & Completed)</option>
+                <option value="Submitted">Completed / Submitted Only</option>
+                <option value="Pending">Pending / Missing Only</option>
+              </select>
+            </div>
+
+            <button onClick={triggerPDFDownload} className={styles.pdfBtn}>
+              📄 Download PDF Report
+            </button>
+          </div>
+        )}
+
+        {/* SCREEN METRIC FILTERS */}
+        {isHRView && (
+          <div className={styles.filterControlBar}>
+            <div className={styles.filterGroup}>
+              <label>🖥️ Screen View Date:</label>
+              <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className={styles.filterDateInput} />
+            </div>
+            <div className={styles.filterGroup}>
+              <label>Daily Status:</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={styles.filterSelect}>
+                <option value="All">All Employees</option>
+                <option value="Submitted">Submitted Reports</option>
+                <option value="Pending">Pending / Missing</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* REPORTS RECORD DATA GRID TABLE */}
         {loading ? (
-          <p>Syncing log updates...</p>
-        ) : reports.length === 0 ? (
-          <p style={{ color: '#666', fontStyle: 'italic' }}>No employee records found.</p>
+          <p>Processing request data streams...</p>
+        ) : filteredReports.length === 0 ? (
+          <p style={{ color: '#666', fontStyle: 'italic', padding: '1rem 0' }}>No records match the active layout view.</p>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+            <table className="employeeTable" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
                   <th style={{ padding: '12px 10px' }}>Employee</th>
                   <th style={{ padding: '12px 10px' }}>Department</th>
-                  {user?.role === 'hr' && <th style={{ padding: '12px 10px' }}>Daily Status</th>}
+                  <th style={{ padding: '12px 10px' }}>Daily Status</th>
                   <th style={{ padding: '12px 10px' }}>Project/Task</th>
                   <th style={{ padding: '12px 10px' }}>Work Status</th>
                   <th style={{ padding: '12px 10px' }}>Duration</th>
@@ -172,58 +246,139 @@ export default function WorkReports({ user }) {
                 </tr>
               </thead>
               <tbody>
-                {reports.map((r, index) => {
+                {(() => {
                   const isHRView = user?.role === 'hr' || user?.role === 'manager';
-                  const hasSubmitted = isHRView ? r.submission_status === 'Submitted' : true;
+                  const showFullDetails = isHRView || isPrinting;
 
-                  return (
-                    <tr key={isHRView ? `emp-${r.employee_id}-${index}` : r.id} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
-                      <td style={{ padding: '12px 10px' }}><strong>{r.employee_name}</strong></td>
-                      <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
-                      
-                      {/* SUBMISSION TARGET INDICATOR STATUS TAGS (For HR Eyes Only) */}
-                      {isHRView && (
-                        <td style={{ padding: '12px 10px' }}>
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '4px 10px',
-                            borderRadius: '20px',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
-                            color: hasSubmitted ? '#065f46' : '#991b1b'
-                          }}>
-                            {r.submission_status}
-                          </span>
+                  // 1. STANDARD SINGLE-DAY OR USER VIEW LAYOUT
+                  if (!isHRView || pdfTimeMode !== 'MonthView') {
+                    return filteredReports.map((r, index) => {
+                      const hasSubmitted = r.submission_status === 'Submitted';
+                      return (
+                        <tr key={index} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
+                          <td style={{ padding: '12px 10px' }}>
+                            <strong>{r.employee_name}</strong>
+                          </td>
+                          <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
+                          
+                          {/* 1. Daily Status Column */}
+                          <td style={{ padding: '12px 10px' }}>
+                            <span style={{
+                              display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700',
+                              backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
+                              color: hasSubmitted ? '#065f46' : '#991b1b'
+                            }}>
+                              {r.submission_status || 'Pending'}
+                            </span>
+                          </td>
+
+                          {/* 2. Project / Task Column */}
+                          <td style={{ padding: '12px 10px' }}>
+                            {hasSubmitted ? r.project_name : <span style={{ color: '#aaa', fontStyle: 'italic' }}>— Not Started —</span>}
+                          </td>
+
+                          {/* 3. Work Status Badge Column */}
+                          <td style={{ padding: '12px 10px' }}>
+                            {hasSubmitted ? (
+                              <span style={{
+                                display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
+                                backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
+                                color: r.work_status === 'Completed' ? '#137333' : '#b06000'
+                              }}>{r.work_status}</span>
+                            ) : '—'}
+                          </td>
+
+                          {/* 4. Duration Column */}
+                          <td style={{ padding: '12px 10px' }}>
+                            {hasSubmitted && r.start_time ? <code>{r.start_time.substring(0, 5)} - {r.end_time.substring(0, 5)}</code> : '—'}
+                          </td>
+
+                          {/* 5. Remarks / Notes Column */}
+                          <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
+                            {hasSubmitted ? (r.remarks || 'None') : '—'}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  }
+
+                  // 2. ADVANCED ENTIRE MONTH CALENDAR VIEW: Client-side grouping by target dates
+                  const groups = {};
+                  filteredReports.forEach((r) => {
+                    const dateStr = r.date ? new Date(r.date).toLocaleDateString(undefined, { timeZone: 'UTC' }) : 'Unknown Date';
+                    if (!groups[dateStr]) groups[dateStr] = [];
+                    groups[dateStr].push(r);
+                  });
+
+                  // 3. Render elements day-by-day with high-contrast grouping layout rows
+                  return Object.keys(groups).map((dateKey) => (
+                    <tr key={dateKey} style={{ display: 'contents' }}>
+                      {/* Full-width Date Section Header Separator Banner */}
+                      <tr>
+                        <td colSpan="7" style={{
+                          background: '#e5e7eb',
+                          padding: '10px 12px',
+                          fontWeight: 'bold',
+                          color: '#111827',
+                          fontSize: '0.85rem',
+                          borderBottom: '1px solid #d1d5db'
+                        }}>
+                          📅 Date: {dateKey}
                         </td>
-                      )}
+                      </tr>
+                      
+                      {/* Populate child lines mapping to employees tracked inside this specific date */}
+                      {groups[dateKey].map((r, idx) => {
+                        const hasSubmitted = r.submission_status === 'Submitted';
+                        return (
+                          <tr key={`row-${dateKey}-${idx}`} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
+                            <td style={{ padding: '12px 10px', paddingLeft: '20px' }}>
+                              <strong>{r.employee_name}</strong>
+                            </td>
+                            <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
+                            
+                            {/* 1. Daily Status Column */}
+                            <td style={{ padding: '12px 10px' }}>
+                              <span style={{
+                                display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700',
+                                backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
+                                color: hasSubmitted ? '#065f46' : '#991b1b'
+                              }}>
+                                {r.submission_status || 'Pending'}
+                              </span>
+                            </td>
 
-                      {/* DATA REPORT PARAMETERS DISPLAY CONTAINER */}
-                      <td style={{ padding: '12px 10px' }}>{hasSubmitted ? r.project_name : <span style={{color: '#aaa', fontStyle: 'italic'}}>— Not Started —</span>}</td>
-                      <td style={{ padding: '12px 10px' }}>
-                        {hasSubmitted ? (
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            fontSize: '0.8rem',
-                            fontWeight: 'bold',
-                            backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
-                            color: r.work_status === 'Completed' ? '#137333' : '#b06000'
-                          }}>
-                            {r.work_status}
-                          </span>
-                        ) : '—'}
-                      </td>
-                      <td style={{ padding: '12px 10px' }}>
-                        {hasSubmitted && r.start_time ? <code>{r.start_time.substring(0, 5)} - {r.end_time.substring(0, 5)}</code> : '—'}
-                      </td>
-                      <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
-                        {hasSubmitted ? (r.remarks || <span style={{ color: '#ccc', fontStyle: 'italic' }}>None</span>) : '—'}
-                      </td>
+                            {/* 2. Project / Task Column */}
+                            <td style={{ padding: '12px 10px' }}>
+                              {hasSubmitted ? r.project_name : <span style={{ color: '#aaa', fontStyle: 'italic' }}>— Not Started —</span>}
+                            </td>
+
+                            {/* 3. Work Status Badge Column */}
+                            <td style={{ padding: '12px 10px' }}>
+                              {hasSubmitted ? (
+                                <span style={{
+                                  display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
+                                  backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
+                                  color: r.work_status === 'Completed' ? '#137333' : '#b06000'
+                                }}>{r.work_status}</span>
+                              ) : '—'}
+                            </td>
+
+                            {/* 4. Duration Column */}
+                            <td style={{ padding: '12px 10px' }}>
+                              {hasSubmitted && r.start_time ? <code>{r.start_time.substring(0, 5)} - {r.end_time.substring(0, 5)}</code> : '—'}
+                            </td>
+
+                            {/* 5. Remarks / Notes Column */}
+                            <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
+                              {hasSubmitted ? (r.remarks || 'None') : '—'}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tr>
-                  );
-                })}
+                  ));
+                })()}
               </tbody>
             </table>
           </div>

@@ -60,9 +60,9 @@ app.post('/api/reports', async (req, res) => {
   }
 });
 
-// GET: Fetch Work Reports & Status Trackers
+// GET: Fetch Work Reports & Status Trackers (Updated with Dynamic History Date Filter)
 app.get('/api/reports', async (req, res) => {
-  const { employee_id, role } = req.query;
+  const { employee_id, role, date } = req.query;
 
   try {
     // Standard User: Only fetch their individual history log list
@@ -79,29 +79,75 @@ app.get('/api/reports', async (req, res) => {
       return res.json({ status: 'success', data: result.rows, type: 'individual' });
     }
 
-    // HR Admin: Fetch ALL registered employees mapped with TODAY's submission data status
-    const queryText = `
-      SELECT 
-        e.id as employee_id,
-        concat(e.first_name, ' ', e.last_name) as employee_name,
-        d.name as department_name,
-        r.id as report_id,
-        r.date,
-        r.project_name,
-        r.work_status,
-        r.start_time,
-        r.end_time,
-        r.remarks,
-        CASE 
-          WHEN r.id IS NOT NULL THEN 'Submitted'
-          ELSE 'Pending'
-        END as submission_status
-      FROM employees e
-      LEFT JOIN departments d ON e.department_id = d.id
-      LEFT JOIN daily_reports r ON e.id = r.employee_id AND r.date = CURRENT_DATE
-      ORDER BY submission_status ASC, employee_name ASC;
-    `;
-    const result = await pool.query(queryText);
+    // HR Admin Dashboard: Handle conditional filtering for either a single Day or an entire Month
+    const filterDate = date || new Date().toISOString().split('T')[0];
+    const isMonthRange = req.query.range === 'month';
+
+    let queryText = '';
+    const values = [];
+
+    if (isMonthRange) {
+      // 1. ADVANCED MONTH RANGE: Cross-joins generated dates against all employees
+      const yearMonth = filterDate.substring(0, 7);
+      
+      queryText = `
+        WITH month_days AS (
+          SELECT generate_series(
+            date_trunc('month', ($1 || '-01')::date),
+            (date_trunc('month', ($1 || '-01')::date) + interval '1 month' - interval '1 day')::date,
+            interval '1 day'
+          )::date AS report_date
+        )
+        SELECT 
+          e.id as employee_id,
+          concat(e.first_name, ' ', e.last_name) as employee_name,
+          d.name as department_name,
+          r.id as report_id,
+          md.report_date as date,
+          r.project_name,
+          r.work_status,
+          r.start_time,
+          r.end_time,
+          r.remarks,
+          CASE 
+            WHEN r.id IS NOT NULL THEN 'Submitted'
+            ELSE 'Pending'
+          END as submission_status
+        FROM month_days md
+        CROSS JOIN employees e
+        LEFT JOIN departments d ON e.department_id = d.id
+        LEFT JOIN daily_reports r ON e.id = r.employee_id AND r.date = md.report_date
+        ORDER BY md.report_date ASC, employee_name ASC;
+      `;
+      values.push(yearMonth);
+      
+    } else {
+      // 2. STANDARD SINGLE DAY VIEW: Queries a specific timestamp safely using table 'r'
+      queryText = `
+        SELECT 
+          e.id as employee_id,
+          concat(e.first_name, ' ', e.last_name) as employee_name,
+          d.name as department_name,
+          r.id as report_id,
+          r.date,
+          r.project_name,
+          r.work_status,
+          r.start_time,
+          r.end_time,
+          r.remarks,
+          CASE 
+            WHEN r.id IS NOT NULL THEN 'Submitted'
+            ELSE 'Pending'
+          END as submission_status
+        FROM employees e
+        LEFT JOIN departments d ON e.department_id = d.id
+        LEFT JOIN daily_reports r ON e.id = r.employee_id AND r.date = $1
+        ORDER BY submission_status ASC, employee_name ASC;
+      `;
+      values.push(filterDate);
+    }
+
+    const result = await pool.query(queryText, values);
     res.json({ status: 'success', data: result.rows, type: 'hr-dashboard' });
 
   } catch (err) {

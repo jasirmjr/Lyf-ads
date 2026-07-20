@@ -72,3 +72,153 @@
   border-radius: 12px;
   border: 1px solid #e5e7eb;
 }
+
+.filterControlBar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  background: #f9fafb;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.filterSelect, .filterDateInput {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background-color: #fff;
+}
+
+.downloadBtn {
+  margin-left: auto; /* Pushes the button perfectly to the right side of the bar */
+  padding: 0.5rem 1rem;
+  background-color: #22c55e; /* Vibrant clean green matching export workflows */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.downloadBtn:hover {
+  background-color: #16a34a;
+}
+
+.pdfControlBox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+  background: #f3f4f6;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.pdfBtn {
+  padding: 0.5rem 1.25rem;
+  background-color: #ef4444; /* Corporate Red for PDF triggers */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s ease;
+  height: 36px;
+}
+
+.pdfBtn:hover {
+  background-color: #dc2626;
+}
+
+/* 🖨️ ABSOLUTE PRINT COMPLIANCE STYLE SHEET ENGINE */
+@media print {
+  @page {
+    size: landscape;
+    margin: 8mm; /* Maximizes printable space canvas */
+  }
+
+  /* Completely strip app chrome and side panels */
+  aside, nav, button, form, .formSection, .filterControlBar, .pdfControlBox, h2 {
+    display: none !important;
+  }
+
+  /* Reset all potential wrapper blockages so they don't lock dimensions */
+  body, main, div, section, .pageContainer, .logsSection {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    overflow: visible !important; /* Disables the horizontal scroll bars entirely */
+    display: block !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+  }
+
+  /* Target the table layout precisely */
+  .logsSection div {
+    overflow: visible !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto !important; /* Force browser to stretch columns to fit landscape text width */
+    border-collapse: collapse !important;
+    overflow: visible !important;
+  }
+
+  /* Force exact cell padding & formatting rules for the printable doc sheet */
+  th {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-size: 0.75rem !important;
+    padding: 6px 8px !important;
+    border-bottom: 2px solid #ccc !important;
+  }
+
+  td {
+    font-size: 0.75rem !important;
+    padding: 6px 8px !important;
+    border-bottom: 1px solid #eee !important;
+    white-space: normal !important; /* Breaks long project texts down into paragraphs instead of stretching wide */
+    word-break: break-word !important;
+  }
+
+  code {
+    background: transparent !important;
+    font-size: 0.7rem !important;
+  }
+}
+
