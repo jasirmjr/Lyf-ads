@@ -26,9 +26,26 @@
   text-align: left;
 }
 
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 768px) {
+  .singlePageContainer {
+    padding: 1.5rem;
+  }
+
+  .loginCentralCard {
+    padding: 3rem 2.5rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
 @media (max-width: 480px) {
+  .singlePageContainer {
+    padding: 1rem;
+  }
+
   .loginCentralCard {
     padding: 2.5rem 1.5rem;
+    border-radius: 16px;
   }
 }
 
@@ -62,6 +79,12 @@
   color: #0f172a;
   margin: 0 0 0.75rem 0;
   letter-spacing: -0.03em;
+}
+
+@media (max-width: 480px) {
+  .mainGreeting {
+    font-size: 2rem;
+  }
 }
 
 .subGreeting {

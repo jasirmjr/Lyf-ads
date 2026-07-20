@@ -5,6 +5,23 @@
   padding: 1rem;
 }
 
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .pageContainer {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .pageContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+}
+
 .cardSection {
   background: #ffffff;
   padding: 1.5rem;

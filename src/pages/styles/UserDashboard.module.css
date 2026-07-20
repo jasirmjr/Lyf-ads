@@ -11,12 +11,39 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .dashboardCard {
+    padding: 2rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .dashboardCard {
+    padding: 1.5rem;
+  }
+}
+
+/* 📱 SMALL MOBILE RESPONSIVE */
+@media (max-width: 480px) {
+  .dashboardCard {
+    padding: 1rem;
+  }
+}
+
 .title {
   margin: 0;
   font-size: 2.25rem;
   font-weight: 800;
   color: #111827;
   letter-spacing: -0.025em;
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.75rem;
+  }
 }
 
 .subtitle {
@@ -42,6 +69,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+/* 📱 MOBILE RESPONSIVE - Stack cards vertically */
+@media (max-width: 768px) {
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .actionCardActive {

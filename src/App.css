@@ -196,19 +196,33 @@
 
 .mainContentPane {
   flex: 1;
-  padding: 2rem;
+  padding: 2.5rem;
   background-color: #f8fafc;
   overflow-y: auto;
   transition: padding 0.25s ease-in-out;
 }
 
-/* 📱 MOBILE & TABLET RESPONSIVE RULES */
+/* 📱 TABLET RESPONSIVE RULES */
+@media (max-width: 1024px) {
+  .mainContentPane {
+    padding: 2rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE RULES */
 @media (max-width: 768px) {
   .appLayoutContainer {
-    flex-direction: column; /* Stack the sidebar layout vertically on top of content */
+    flex-direction: column;
   }
 
   .mainContentPane {
-    padding: 1rem; /* Condense wide margins on small mobile screens */
+    padding: 1.5rem;
+  }
+}
+
+/* 📱 SMALL MOBILE RESPONSIVE RULES */
+@media (max-width: 480px) {
+  .mainContentPane {
+    padding: 1rem;
   }
 }

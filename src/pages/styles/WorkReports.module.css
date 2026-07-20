@@ -13,6 +13,20 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .formSection {
+    padding: 1.5rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .formSection {
+    padding: 1rem;
+  }
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -71,6 +85,20 @@
   padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
+}
+
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .logsSection {
+    padding: 1.5rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .logsSection {
+    padding: 1rem;
+  }
 }
 
 .filterControlBar {

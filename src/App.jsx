@@ -7,21 +7,10 @@ import UserDashboard from './pages/UserDashboard';
 import WorkReports from './pages/WorkReports';
 import EmployeeMgmt from './pages/EmployeeMgmt';
 import OrgSettings from './pages/OrgSettings';
+import './App.css';
 
 function App() {
   const [user, setUser] = useState(null); // Holds { id, name, email, role }
-
-  // Fixed structural dimensions matching the HR dashboard setup perfectly
-  const layoutContainer = {
-    display: 'grid',
-    gridTemplateColumns: '260px 1fr', 
-    minHeight: '100vh',
-  };
-
-  const contentArea = {
-    padding: '2.5rem',
-    overflowY: 'auto',
-  };
 
   if (!user) {
     return <Landing onLoginSuccess={(loggedInUser) => setUser(loggedInUser)} />;
@@ -37,11 +26,11 @@ function App() {
 
   return (
     <Router>
-      <div style={layoutContainer}>
+      <div className="appLayoutContainer">
         {/* Pass the logged-in user to the Navbar so it can control link visibility */}
         <Navbar user={user} onUserUpdate={handleUserUpdate} />
 
-        <main style={contentArea}>
+        <main className="mainContentPane">
           <Routes>
             <Route path="/" element={isAdmin ? <Dashboard /> : <UserDashboard user={user} />} />
             <Route path="/reports" element={<WorkReports user={user} />} />

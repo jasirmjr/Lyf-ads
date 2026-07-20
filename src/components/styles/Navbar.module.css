@@ -5,6 +5,56 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 260px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE - Sidebar becomes horizontal top bar */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+  }
+
+  .navMenu {
+    display: none;
+  }
+
+  .navMenu.mobileOpen {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .profileRow {
+    margin-top: 0;
+    border-top: none;
+    padding: 0;
+  }
 }
 
 .logoArea {
@@ -138,4 +188,31 @@
 
 .cancelBtn:hover {
   background: #e5e7eb;
+}
+
+/* 📱 MOBILE HAMBURGER MENU */
+.hamburgerButton {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  color: #374151;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .hamburgerButton {
+    display: block;
+  }
+
+  .logoRow {
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
+
+  .appTitle {
+    font-size: 1.1rem;
+  }
 }

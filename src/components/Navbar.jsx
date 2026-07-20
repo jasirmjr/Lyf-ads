@@ -4,6 +4,7 @@ import styles from './styles/Navbar.module.css';
 
 export default function Navbar({ user, onUserUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const currentNameParts = user?.name ? user.name.split(' ') : ['', ''];
   const [profileForm, setProfileForm] = useState({
@@ -59,19 +60,28 @@ export default function Navbar({ user, onUserUpdate }) {
           <span className={styles.appTitle || styles.logoText}>DrewHub</span>
         </div>
 
-        <nav className={styles.navMenu || styles.nav}>
+        {/* Mobile Hamburger Button */}
+        <button 
+          className={styles.hamburgerButton}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? '✕' : '☰'}
+        </button>
+
+        <nav className={`${styles.navMenu || styles.nav} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
           <div className={styles.sectionHeader || styles.sectionTitle}>OPERATIONS</div>
-          <NavLink to="/reports" className={getLinkClass}>
+          <NavLink to="/reports" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
              Daily Reports
           </NavLink>
           
           {isAdmin && (
             <>
               <div className={styles.sectionHeader || styles.sectionTitle}>HUMAN RESOURCES</div>
-              <NavLink to="/employees" className={getLinkClass}>
+              <NavLink to="/employees" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                 👥 Employees
               </NavLink>
-              <NavLink to="/settings" className={getLinkClass}>
+              <NavLink to="/settings" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                 ⚙️ Org Settings
               </NavLink>
             </>
