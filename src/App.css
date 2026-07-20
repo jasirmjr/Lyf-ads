@@ -182,3 +182,33 @@
     border-right-color: var(--border);
   }
 }
+
+
+//////////////
+
+
+.appLayoutContainer {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.mainContentPane {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f8fafc;
+  overflow-y: auto;
+  transition: padding 0.25s ease-in-out;
+}
+
+/* 📱 MOBILE & TABLET RESPONSIVE RULES */
+@media (max-width: 768px) {
+  .appLayoutContainer {
+    flex-direction: column; /* Stack the sidebar layout vertically on top of content */
+  }
+
+  .mainContentPane {
+    padding: 1rem; /* Condense wide margins on small mobile screens */
+  }
+}

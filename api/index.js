@@ -159,40 +159,51 @@ app.get('/api/reports', async (req, res) => {
 
 // POST: Onboard a new employee with dynamic department and role mapping
 app.post('/api/employees', async (req, res) => {
-  const { name, email, phone, department_id, design_role_id } = req.body;
+  // Extract fields exactly as the frontend form passes them (name, email, phone, etc.)
+  const { name, email, phone, department_id, design_role_id, password } = req.body;
 
+  // Validate the frontend fields
   if (!name || !email || !department_id || !design_role_id) {
-    return res.status(400).json({ error: 'Name, email, department, and role are required fields.' });
+    return res.status(400).json({ error: 'Full Name, email, department, and role are required fields.' });
   }
 
-  // Split full name into first and last name for database table structure consistency
+  // Split Full Name into first_name and last_name automatically for the database consistency
   const nameParts = name.trim().split(' ');
   const first_name = nameParts[0];
   const last_name = nameParts.slice(1).join(' ') || '';
 
+  // Fallback to 'admin123' if no custom password was set
+  const fallbackPassword = password && password.trim() !== '' ? password.trim() : 'admin123';
+  
+  // Safely extract phone number if present
+  const safePhone = phone ? phone.trim() : '';
+
   try {
-    const queryText = `
-      INSERT INTO employees (first_name, last_name, email, phone, department_id, design_role_id)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *;
+    const insertQuery = `
+      INSERT INTO employees (first_name, last_name, email, phone, department_id, design_role_id, password)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, first_name, last_name, email;
     `;
     const values = [
       first_name, 
       last_name, 
       email.trim().toLowerCase(), 
-      phone || null, 
+      safePhone, 
       parseInt(department_id), 
-      parseInt(design_role_id)
+      parseInt(design_role_id), 
+      fallbackPassword
     ];
     
-    const result = await pool.query(queryText, values);
+    // Executed exactly once
+    const result = await pool.query(insertQuery, values);
+    
     res.status(201).json({ status: 'success', data: result.rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error("REGISTRATION DATABASE TRANSACTION ERROR:", err);
     if (err.code === '23505') {
       return res.status(400).json({ error: 'An employee profile with this corporate email already exists.' });
     }
-    res.status(500).json({ error: 'Database transaction failed.' });
+    res.status(500).json({ error: `Database transaction failed: ${err.message}` });
   }
 });
 
@@ -224,13 +235,14 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   try {
-    // 1. Check if the user exists in the database by email
+    // 1. Check if the user exists in the database by email and pull their unique password
     const result = await pool.query(
       `SELECT 
         e.id, 
         e.first_name, 
         e.last_name, 
         e.email, 
+        e.password,
         r.role_name as role, 
         d.name as department_name 
       FROM employees e
@@ -245,12 +257,12 @@ app.post('/api/auth/login', async (req, res) => {
 
     const user = result.rows[0];
 
-    // 2. Simple password check for demonstration/testing
-    if (password !== 'admin123') {
+    // 2. Read the unique password directly from the database row
+    if (password !== user.password) {
       return res.status(401).json({ error: 'Incorrect password.' });
     }
 
-    // Success: Return user profile data and role category back to frontend
+    // Success
     res.json({
       status: 'success',
       user: {
@@ -258,7 +270,7 @@ app.post('/api/auth/login', async (req, res) => {
         name: `${user.first_name} ${user.last_name}`,
         email: user.email,
         role: user.role,
-        department: user.department_name || 'General Operations' // Packaged for frontend autofill
+        department: user.department_name || 'General Operations'
       }
     });
   } catch (err) {
@@ -356,6 +368,59 @@ app.delete('/api/employees/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete employee due to database dependencies.' });
+  }
+});
+
+// PUT: Update current employee profile name & password credentials
+app.put('/api/auth/profile', async (req, res) => {
+  const { employee_id, first_name, last_name, password } = req.body;
+
+  if (!employee_id || !first_name) {
+    return res.status(400).json({ error: 'Employee ID and First Name are required fields.' });
+  }
+
+  const safeFirstName = first_name.trim();
+  const safeLastName = last_name ? last_name.trim() : ''; 
+
+  try {
+    let queryText;
+    let values;
+
+    if (password && password.trim() !== '') {
+      // If a password is provided, update names AND the new password column
+      queryText = `
+        UPDATE employees 
+        SET first_name = $1, last_name = $2, password = $3
+        WHERE id = $4
+        RETURNING id, first_name, last_name, email;
+      `;
+      values = [safeFirstName, safeLastName, password.trim(), parseInt(employee_id)];
+    } else {
+      // If password field is blank, only update names
+      queryText = `
+        UPDATE employees 
+        SET first_name = $1, last_name = $2
+        WHERE id = $3
+        RETURNING id, first_name, last_name, email;
+      `;
+      values = [safeFirstName, safeLastName, parseInt(employee_id)];
+    }
+
+    const result = await pool.query(queryText, values);
+    const finalFullName = `${result.rows[0].first_name} ${result.rows[0].last_name}`.trim();
+
+    res.json({ 
+      status: 'success', 
+      message: 'Profile updated successfully!', 
+      user: {
+        id: result.rows[0].id,
+        name: finalFullName,
+        email: result.rows[0].email
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: `Database update transaction failed: ${err.message}` });
   }
 });
 

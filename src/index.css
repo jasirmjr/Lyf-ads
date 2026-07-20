@@ -6,3 +6,26 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #1f2937;
 }
+
+/* Ensure content box calculations include padding and borders seamlessly */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent unwanted layout shifting or horizontal scrolling on mobile viewports */
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base text dynamic adjustments for large TV screen monitors */
+@media (min-width: 1921px) {
+  html {
+    font-size: 18px; /* Scales typography upward seamlessly on ultra-wide screens/TVs */
+  }
+}

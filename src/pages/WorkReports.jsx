@@ -140,28 +140,30 @@ export default function WorkReports({ user }) {
       {/* REPORT SUBMISSION CARD */}
       <section className={styles.formSection}>
         <h2 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Submit Daily Report</h2>
-        <form onSubmit={handleSubmit}>
-          {/* Form groups remain as built previously */}
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}><label>Employee Name</label><input type="text" className={styles.disabledField} value={user?.name || ''} disabled /></div>
-            <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled /></div>
-            <div className={styles.formGroup}><label>Date</label><input type="date" name="date" value={formData.date} min={new Date().toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} required className={styles.inputField} /></div>
-            <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. CoreHR Authentication" /></div>
-            <div className={styles.formGroup}>
-              <label>Work Status</label>
-              <select name="work_status" value={formData.work_status} onChange={handleChange} className={styles.selectField}>
-                <option value="Completed">Completed</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Delayed">Delayed</option>
-                <option value="On Hold">On Hold</option>
-              </select>
+        <div className={styles.formRowGroup}>
+          <form onSubmit={handleSubmit}>
+            {/* Form groups remain as built previously */}
+            <div className={styles.formGrid}>
+              <div className={styles.formGroup}><label>Employee Name</label><input type="text" className={styles.disabledField} value={user?.name || ''} disabled /></div>
+              <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled /></div>
+              <div className={styles.formGroup}><label>Date</label><input type="date" name="date" value={formData.date} min={new Date().toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} required className={styles.inputField} /></div>
+              <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. CoreHR Authentication" /></div>
+              <div className={styles.formGroup}>
+                <label>Work Status</label>
+                <select name="work_status" value={formData.work_status} onChange={handleChange} className={styles.selectField}>
+                  <option value="Completed">Completed</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Delayed">Delayed</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+              </div>
+              <div className={styles.formGroup}><label>Start Time</label><input type="time" name="start_time" value={formData.start_time} onChange={handleChange} required className={styles.inputField} /></div>
+              <div className={styles.formGroup}><label>End Time</label><input type="time" name="end_time" value={formData.end_time} onChange={handleChange} required className={styles.inputField} /></div>
+              <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Remarks / Notes</label><textarea name="remarks" value={formData.remarks} onChange={handleChange} className={styles.inputField} style={{ minHeight: '60px' }} placeholder="Detail specific items completed..." /></div>
             </div>
-            <div className={styles.formGroup}><label>Start Time</label><input type="time" name="start_time" value={formData.start_time} onChange={handleChange} required className={styles.inputField} /></div>
-            <div className={styles.formGroup}><label>End Time</label><input type="time" name="end_time" value={formData.end_time} onChange={handleChange} required className={styles.inputField} /></div>
-            <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Remarks / Notes</label><textarea name="remarks" value={formData.remarks} onChange={handleChange} className={styles.inputField} style={{ minHeight: '60px' }} placeholder="Detail specific items completed..." /></div>
-          </div>
-          <button type="submit" className={styles.submitBtn}>Submit Report</button>
-        </form>
+            <button type="submit" className={styles.submitBtn}>Submit Report</button>
+          </form>
+        </div>
       </section>
 
       {/* TRACKER & EXPORT CONTROL INTERFACE MODULE */}
@@ -232,110 +234,37 @@ export default function WorkReports({ user }) {
         ) : filteredReports.length === 0 ? (
           <p style={{ color: '#666', fontStyle: 'italic', padding: '1rem 0' }}>No records match the active layout view.</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="employeeTable" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
-              <thead>
-                <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
-                  <th style={{ padding: '12px 10px' }}>Employee</th>
-                  <th style={{ padding: '12px 10px' }}>Department</th>
-                  <th style={{ padding: '12px 10px' }}>Daily Status</th>
-                  <th style={{ padding: '12px 10px' }}>Project/Task</th>
-                  <th style={{ padding: '12px 10px' }}>Work Status</th>
-                  <th style={{ padding: '12px 10px' }}>Duration</th>
-                  <th style={{ padding: '12px 10px' }}>Remarks / Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  const isHRView = user?.role === 'hr' || user?.role === 'manager';
-                  const showFullDetails = isHRView || isPrinting;
+          <div className={styles.tableScrollWrapper}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="employeeTable" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
+                    <th style={{ padding: '12px 10px' }}>Employee</th>
+                    <th style={{ padding: '12px 10px' }}>Department</th>
+                    <th style={{ padding: '12px 10px' }}>Daily Status</th>
+                    <th style={{ padding: '12px 10px' }}>Project/Task</th>
+                    <th style={{ padding: '12px 10px' }}>Work Status</th>
+                    <th style={{ padding: '12px 10px' }}>Duration</th>
+                    <th style={{ padding: '12px 10px' }}>Remarks / Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const isHRView = user?.role === 'hr' || user?.role === 'manager';
+                    const showFullDetails = isHRView || isPrinting;
 
-                  // 1. STANDARD SINGLE-DAY OR USER VIEW LAYOUT
-                  if (!isHRView || pdfTimeMode !== 'MonthView') {
-                    return filteredReports.map((r, index) => {
-                      const hasSubmitted = r.submission_status === 'Submitted';
-                      return (
-                        <tr key={index} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
-                          <td style={{ padding: '12px 10px' }}>
-                            <strong>{r.employee_name}</strong>
-                          </td>
-                          <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
-                          
-                          {/* 1. Daily Status Column */}
-                          <td style={{ padding: '12px 10px' }}>
-                            <span style={{
-                              display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700',
-                              backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
-                              color: hasSubmitted ? '#065f46' : '#991b1b'
-                            }}>
-                              {r.submission_status || 'Pending'}
-                            </span>
-                          </td>
-
-                          {/* 2. Project / Task Column */}
-                          <td style={{ padding: '12px 10px' }}>
-                            {hasSubmitted ? r.project_name : <span style={{ color: '#aaa', fontStyle: 'italic' }}>— Not Started —</span>}
-                          </td>
-
-                          {/* 3. Work Status Badge Column */}
-                          <td style={{ padding: '12px 10px' }}>
-                            {hasSubmitted ? (
-                              <span style={{
-                                display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
-                                backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
-                                color: r.work_status === 'Completed' ? '#137333' : '#b06000'
-                              }}>{r.work_status}</span>
-                            ) : '—'}
-                          </td>
-
-                          {/* 4. Duration Column */}
-                          <td style={{ padding: '12px 10px' }}>
-                            {hasSubmitted && r.start_time ? <code>{r.start_time.substring(0, 5)} - {r.end_time.substring(0, 5)}</code> : '—'}
-                          </td>
-
-                          {/* 5. Remarks / Notes Column */}
-                          <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
-                            {hasSubmitted ? (r.remarks || 'None') : '—'}
-                          </td>
-                        </tr>
-                      );
-                    });
-                  }
-
-                  // 2. ADVANCED ENTIRE MONTH CALENDAR VIEW: Client-side grouping by target dates
-                  const groups = {};
-                  filteredReports.forEach((r) => {
-                    const dateStr = r.date ? new Date(r.date).toLocaleDateString(undefined, { timeZone: 'UTC' }) : 'Unknown Date';
-                    if (!groups[dateStr]) groups[dateStr] = [];
-                    groups[dateStr].push(r);
-                  });
-
-                  // 3. Render elements day-by-day with high-contrast grouping layout rows
-                  return Object.keys(groups).map((dateKey) => (
-                    <tr key={dateKey} style={{ display: 'contents' }}>
-                      {/* Full-width Date Section Header Separator Banner */}
-                      <tr>
-                        <td colSpan="7" style={{
-                          background: '#e5e7eb',
-                          padding: '10px 12px',
-                          fontWeight: 'bold',
-                          color: '#111827',
-                          fontSize: '0.85rem',
-                          borderBottom: '1px solid #d1d5db'
-                        }}>
-                          📅 Date: {dateKey}
-                        </td>
-                      </tr>
-                      
-                      {/* Populate child lines mapping to employees tracked inside this specific date */}
-                      {groups[dateKey].map((r, idx) => {
-                        const hasSubmitted = r.submission_status === 'Submitted';
+                    // 1. STANDARD SINGLE-DAY OR USER VIEW LAYOUT
+                    if (!isHRView || pdfTimeMode !== 'MonthView') {
+                      return filteredReports.map((r, index) => {
+                        // FIX: Safely determine submission if submission_status is explicit OR if valid report fields exist
+                        const hasSubmitted = r.submission_status === 'Submitted' || !!r.project_name || !!r.id;
+                        
                         return (
-                          <tr key={`row-${dateKey}-${idx}`} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
-                            <td style={{ padding: '12px 10px', paddingLeft: '20px' }}>
-                              <strong>{r.employee_name}</strong>
+                          <tr key={index} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
+                            <td style={{ padding: '12px 10px' }}>
+                              <strong>{r.employee_name || user?.name}</strong>
                             </td>
-                            <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
+                            <td style={{ padding: '12px 10px' }}>{r.department_name || user?.department || 'Unassigned'}</td>
                             
                             {/* 1. Daily Status Column */}
                             <td style={{ padding: '12px 10px' }}>
@@ -344,7 +273,7 @@ export default function WorkReports({ user }) {
                                 backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
                                 color: hasSubmitted ? '#065f46' : '#991b1b'
                               }}>
-                                {r.submission_status || 'Pending'}
+                                {hasSubmitted ? 'Submitted' : 'Pending'}
                               </span>
                             </td>
 
@@ -355,7 +284,7 @@ export default function WorkReports({ user }) {
 
                             {/* 3. Work Status Badge Column */}
                             <td style={{ padding: '12px 10px' }}>
-                              {hasSubmitted ? (
+                              {hasSubmitted && r.work_status ? (
                                 <span style={{
                                   display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
                                   backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
@@ -375,12 +304,89 @@ export default function WorkReports({ user }) {
                             </td>
                           </tr>
                         );
-                      })}
-                    </tr>
-                  ));
-                })()}
-              </tbody>
-            </table>
+                      });
+                    }
+
+                    // 2. ADVANCED ENTIRE MONTH CALENDAR VIEW: Client-side grouping by target dates
+                    const groups = {};
+                    filteredReports.forEach((r) => {
+                      const dateStr = r.date ? new Date(r.date).toLocaleDateString(undefined, { timeZone: 'UTC' }) : 'Unknown Date';
+                      if (!groups[dateStr]) groups[dateStr] = [];
+                      groups[dateStr].push(r);
+                    });
+
+                    // 3. Render elements day-by-day with high-contrast grouping layout rows
+                    return Object.keys(groups).map((dateKey) => (
+                      <tr key={dateKey} style={{ display: 'contents' }}>
+                        {/* Full-width Date Section Header Separator Banner */}
+                        <tr>
+                          <td colSpan="7" style={{
+                            background: '#e5e7eb',
+                            padding: '10px 12px',
+                            fontWeight: 'bold',
+                            color: '#111827',
+                            fontSize: '0.85rem',
+                            borderBottom: '1px solid #d1d5db'
+                          }}>
+                            📅 Date: {dateKey}
+                          </td>
+                        </tr>
+                        
+                        {/* Populate child lines mapping to employees tracked inside this specific date */}
+                        {groups[dateKey].map((r, idx) => {
+                          const hasSubmitted = r.submission_status === 'Submitted';
+                          return (
+                            <tr key={`row-${dateKey}-${idx}`} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
+                              <td style={{ padding: '12px 10px', paddingLeft: '20px' }}>
+                                <strong>{r.employee_name}</strong>
+                              </td>
+                              <td style={{ padding: '12px 10px' }}>{r.department_name || 'Unassigned'}</td>
+                              
+                              {/* 1. Daily Status Column */}
+                              <td style={{ padding: '12px 10px' }}>
+                                <span style={{
+                                  display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700',
+                                  backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
+                                  color: hasSubmitted ? '#065f46' : '#991b1b'
+                                }}>
+                                  {r.submission_status || 'Pending'}
+                                </span>
+                              </td>
+
+                              {/* 2. Project / Task Column */}
+                              <td style={{ padding: '12px 10px' }}>
+                                {hasSubmitted ? r.project_name : <span style={{ color: '#aaa', fontStyle: 'italic' }}>— Not Started —</span>}
+                              </td>
+
+                              {/* 3. Work Status Badge Column */}
+                              <td style={{ padding: '12px 10px' }}>
+                                {hasSubmitted ? (
+                                  <span style={{
+                                    display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
+                                    backgroundColor: r.work_status === 'Completed' ? '#e6f4ea' : '#ffe7d9',
+                                    color: r.work_status === 'Completed' ? '#137333' : '#b06000'
+                                  }}>{r.work_status}</span>
+                                ) : '—'}
+                              </td>
+
+                              {/* 4. Duration Column */}
+                              <td style={{ padding: '12px 10px' }}>
+                                {hasSubmitted && r.start_time ? <code>{r.start_time.substring(0, 5)} - {r.end_time.substring(0, 5)}</code> : '—'}
+                              </td>
+
+                              {/* 5. Remarks / Notes Column */}
+                              <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
+                                {hasSubmitted ? (r.remarks || 'None') : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>

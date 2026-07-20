@@ -97,82 +97,86 @@ export default function EmployeeMgmt() {
       {/* FULL WIDTH FORM LAYOUT WRAPPER */}
       <section className={styles.formSection}>
         <h3 className={styles.formTitle}>Onboard Employee</h3>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            
-            <div className={styles.formGroup}>
-              <label>Full Name</label>
-              <input type="text" placeholder="e.g. Jane Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required className={styles.inputField} />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label>Work Email</label>
-              <input type="email" placeholder="jane.doe@company.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required className={styles.inputField} />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label>Mobile Number</label>
-              <input type="text" placeholder="+1 (555) 000-0000" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className={styles.inputField} />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label>Department</label>
-              <select value={formData.department_id} onChange={handleDeptChange} className={styles.selectField}>
-                {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
-            </div>
+        <div className={styles.formRowGroup}>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formGrid}>
+              
+              <div className={styles.formGroup}>
+                <label>Full Name</label>
+                <input type="text" placeholder="e.g. Jane Doe" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required className={styles.inputField} />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label>Work Email</label>
+                <input type="email" placeholder="jane.doe@company.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required className={styles.inputField} />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label>Mobile Number</label>
+                <input type="text" placeholder="+1 (555) 000-0000" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className={styles.inputField} />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label>Department</label>
+                <select value={formData.department_id} onChange={handleDeptChange} className={styles.selectField}>
+                  {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                </select>
+              </div>
 
-            <div className={styles.formGroup}>
-              <label>Sub-Role</label>
-              <select value={formData.design_role_id} onChange={e => setFormData({...formData, design_role_id: e.target.value})} required className={styles.selectField}>
-                <option value="">-- Choose Mapped Role --</option>
-                {availableRoles.map(r => <option key={r.id} value={r.id}>{r.role_name}</option>)}
-              </select>
-            </div>
+              <div className={styles.formGroup}>
+                <label>Sub-Role</label>
+                <select value={formData.design_role_id} onChange={e => setFormData({...formData, design_role_id: e.target.value})} required className={styles.selectField}>
+                  <option value="">-- Choose Mapped Role --</option>
+                  {availableRoles.map(r => <option key={r.id} value={r.id}>{r.role_name}</option>)}
+                </select>
+              </div>
 
-            <button type="submit" className={styles.submitBtn}>Save Record</button>
-          </div>
-        </form>
+              <button type="submit" className={styles.submitBtn}>Save Record</button>
+            </div>
+          </form>
+        </div>
       </section>
 
       {/* FULL WIDTH EXPANDED DIRECTORY DISPLAY LIST */}
       <section className={styles.tableContainer}>
         <h3 style={{ marginTop: 0, marginBottom: '1.25rem' }}>Active Corporate Directory</h3>
         {loading ? <p>Loading directory data metrics...</p> : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className={styles.employeeTable}>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Full Name</th>
-                  <th>Email Address</th>
-                  <th>Phone</th>
-                  <th>Department</th>
-                  <th>Role Assignment</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map(emp => (
-                  <tr key={emp.id}>
-                    <td><code>#{emp.id}</code></td>
-                    <td><strong>{emp.first_name} {emp.last_name}</strong></td>
-                    <td>{emp.email}</td>
-                    <td>{emp.phone || '—'}</td>
-                    <td>{emp.department_name}</td>
-                    <td>{emp.role_name || <span style={{ color: '#aaa', fontStyle: 'italic' }}>Unassigned</span>}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button 
-                        onClick={() => handleDelete(emp.id, `${emp.first_name} ${emp.last_name}`)}
-                        className={styles.deleteBtn}
-                      >
-                        Delete
-                      </button>
-                    </td>
+          <div className={styles.tableScrollWrapper}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className={styles.employeeTable}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Phone</th>
+                    <th>Department</th>
+                    <th>Role Assignment</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {employees.map(emp => (
+                    <tr key={emp.id}>
+                      <td><code>#{emp.id}</code></td>
+                      <td><strong>{emp.first_name} {emp.last_name}</strong></td>
+                      <td>{emp.email}</td>
+                      <td>{emp.phone || '—'}</td>
+                      <td>{emp.department_name}</td>
+                      <td>{emp.role_name || <span style={{ color: '#aaa', fontStyle: 'italic' }}>Unassigned</span>}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleDelete(emp.id, `${emp.first_name} ${emp.last_name}`)}
+                          className={styles.deleteBtn}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>

@@ -113,3 +113,23 @@
   background: #fee2e2;
   color: #b91c1c;
 }
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto; /* Enables smooth touch horizontal swipe scrolling on mobile grids */
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.formRowGroup {
+  display: flex;
+  flex-wrap: wrap; /* Auto-collapses inputs downward when columns compress */
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.formInputItem {
+  flex: 1 1 250px; /* Allows inputs to fill empty space but wraps them if space is under 250px */
+  min-width: 0;
+}

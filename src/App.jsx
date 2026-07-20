@@ -28,12 +28,18 @@ function App() {
   }
 
   const isAdmin = user.role === 'hr' || user.role === 'manager';
+  const handleUserUpdate = (updatedUserFields) => {
+    setUser(prev => ({
+      ...prev,
+      ...updatedUserFields // Merges the updated names cleanly into active context
+    }));
+  };
 
   return (
     <Router>
       <div style={layoutContainer}>
         {/* Pass the logged-in user to the Navbar so it can control link visibility */}
-        <Navbar user={user} />
+        <Navbar user={user} onUserUpdate={handleUserUpdate} />
 
         <main style={contentArea}>
           <Routes>

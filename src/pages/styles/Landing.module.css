@@ -1,80 +1,176 @@
-.heroContainer {
+.singlePageContainer {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  min-height: 100vh;
   width: 100vw;
-  height: 100vh;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  text-align: center;
-}
-
-.heroCard {
-  background: #ffffff;
-  padding: 3rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
-}
-
-.loginBtn {
-  padding: 0.85rem 2rem;
-  background: #111827;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-  margin-top: 1rem;
-}
-
-.loginBtn:hover {
-  background: #1f2937;
-}
-
-/* Modal Overlay Panel background */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 999;
+  justify-content: center;
+  /* Premium, minimal clean light theme background background color */
+  background-color: #f8fafc;
+  margin: 0;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.modalContent {
+/* Minimalist Card Box with Subtle Light Borders instead of Heavy Shadows */
+.loginCentralCard {
   background: #ffffff;
-  padding: 2.5rem 2rem;
-  border-radius: 12px;
-  width: 340px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  position: relative;
+  padding: 3.5rem 3rem;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
   text-align: left;
 }
 
-.closeBtn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: #9ca3af;
+@media (max-width: 480px) {
+  .loginCentralCard {
+    padding: 2.5rem 1.5rem;
+  }
 }
 
-.inputField {
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2.5rem;
+}
+
+.brandLogo {
+  height: 28px;
+  object-fit: contain;
+}
+
+.fallbackLogoIcon {
+  font-size: 1.5rem;
+}
+
+.brandName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.mainGreeting {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.03em;
+}
+
+.subGreeting {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 2.25rem 0;
+}
+
+.authForm {
   width: 100%;
-  padding: 0.65rem 0.75rem;
-  margin-top: 0.5rem;
+}
+
+.inputGroup {
   margin-bottom: 1.25rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+}
+
+.styledInput {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background-color: #ffffff;
   box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.styledInput:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+.styledInput::placeholder {
+  color: #94a3b8;
+}
+
+.formOptionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 2.25rem;
+  padding: 0 2px;
+}
+
+.rememberMeLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.checkboxControl {
+  width: 16px;
+  height: 16px;
+  accent-color: #7c3aed;
+  cursor: pointer;
+}
+
+.forgotPasswordLink {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgotPasswordLink:hover {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+
+.submitActionButton {
+  width: 100%;
+  padding: 14px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitActionButton:hover {
+  background-color: #6d28d9;
+  transform: translateY(-1px);
+}
+
+.submitActionButton:active {
+  transform: translateY(0);
+}
+
+.formFooterHint {
+  margin-top: 2.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.contactHRText {
+  color: #7c3aed;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contactHRText:hover {
+  text-decoration: underline;
 }

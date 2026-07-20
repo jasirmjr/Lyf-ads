@@ -222,3 +222,69 @@
   }
 }
 
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto; /* Enables smooth touch horizontal swipe scrolling on mobile grids */
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.formRowGroup {
+  display: flex;
+  flex-wrap: wrap; /* Auto-collapses inputs downward when columns compress */
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.formInputItem {
+  flex: 1 1 250px; /* Allows inputs to fill empty space but wraps them if space is under 250px */
+  min-width: 0;
+}
+
+/* The grid layout automatically calculates how many inputs can fit in one row */
+.formGrid {
+  display: grid;
+  /* Auto-fit dynamically drops inputs to the next line if they compress below 220px */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+/* Individual wrapper item holding a single label + input combo */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Ensures labels are aligned nicely */
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+/* Forces the Remarks field to stretch horizontally on wider monitor displays */
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* General input fields behavior control setup */
+.inputField, .selectField, .disabledField {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box; /* Crucial: ensures internal padding doesn't cause overflow clip errors */
+}
+
+.disabledField {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+}
