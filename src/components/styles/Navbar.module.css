@@ -22,21 +22,21 @@
 /* 📱 MOBILE RESPONSIVE - Sidebar becomes horizontal top bar */
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    padding: 1rem;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 1rem !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
   }
 
   .logoRow {
-    margin-bottom: 0;
-    margin-right: 1rem;
+    margin-bottom: 0 !important;
+    margin-right: 1rem !important;
   }
 
   .navMenu {
@@ -45,27 +45,27 @@
 
   .navMenu.mobileOpen {
     display: flex !important;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #ffffff;
-    flex-direction: column;
-    padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    z-index: 999;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: #ffffff !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    z-index: 999 !important;
   }
 
   .profileRow {
-    margin-top: 0;
-    border-top: none;
-    padding: 0;
+    margin-top: 0 !important;
+    border-top: none !important;
+    padding: 0 !important;
     display: none !important;
   }
 
   .sectionHeader {
-    margin-top: 0.5rem;
+    margin-top: 0.5rem !important;
   }
 }
 
@@ -151,6 +151,40 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userIcon {
+  font-size: 1.1rem;
+}
+
+.userName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.editButton {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.editButton:hover {
+  background-color: #eff6ff;
 }
 
 /* Profile action container at sidebar bottom */

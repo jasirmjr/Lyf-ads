@@ -26,11 +26,11 @@ function App() {
 
   return (
     <Router>
-      <div className="appLayoutContainer">
+      <div className="app-layout-wrapper">
         {/* Pass the logged-in user to the Navbar so it can control link visibility */}
         <Navbar user={user} onUserUpdate={handleUserUpdate} />
 
-        <main className="mainContentPane">
+        <main className="main-content-wrapper">
           <Routes>
             <Route path="/" element={isAdmin ? <Dashboard /> : <UserDashboard user={user} />} />
             <Route path="/reports" element={<WorkReports user={user} />} />

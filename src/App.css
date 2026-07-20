@@ -184,9 +184,6 @@
 }
 
 
-//////////////
-
-
 .appLayoutContainer {
   display: flex;
   flex-direction: row;
@@ -212,11 +209,64 @@
 /* 📱 MOBILE RESPONSIVE RULES */
 @media (max-width: 768px) {
   .appLayoutContainer {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .mainContentPane {
     padding: 1.5rem;
+  }
+
+  /* Force sidebar to be horizontal on mobile */
+  .sidebar {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 1rem !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+  }
+
+  .logoRow {
+    margin-bottom: 0 !important;
+    margin-right: 1rem !important;
+  }
+
+  .navMenu {
+    display: none !important;
+  }
+
+  .navMenu.mobileOpen {
+    display: flex !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: #ffffff !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    z-index: 999 !important;
+  }
+
+  .profileRow {
+    display: none !important;
+  }
+
+  .hamburgerButton {
+    display: block !important;
+  }
+
+  .mobileProfileButton {
+    display: block !important;
+  }
+
+  .sectionHeader {
+    margin-top: 0.5rem !important;
   }
 }
 

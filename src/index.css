@@ -29,3 +29,43 @@ html, body, #root {
     font-size: 18px; /* Scales typography upward seamlessly on ultra-wide screens/TVs */
   }
 }
+
+/* 📱 RESPONSIVE LAYOUT STYLES */
+.app-layout-wrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.main-content-wrapper {
+  flex: 1;
+  padding: 2.5rem;
+  background-color: #f8fafc;
+  overflow-y: auto;
+}
+
+/* 📱 TABLET RESPONSIVE */
+@media (max-width: 1024px) {
+  .main-content-wrapper {
+    padding: 2rem;
+  }
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .app-layout-wrapper {
+    flex-direction: column;
+  }
+
+  .main-content-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+/* 📱 SMALL MOBILE RESPONSIVE */
+@media (max-width: 480px) {
+  .main-content-wrapper {
+    padding: 1rem;
+  }
+}
