@@ -492,5 +492,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   }
 });
 
+
+
+
 // CRITICAL FOR VERCEL: Export the app instead of app.listen()
 module.exports = app;

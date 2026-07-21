@@ -33,6 +33,7 @@ function App() {
         <main className="main-content-wrapper">
           <Routes>
             <Route path="/" element={isAdmin ? <Dashboard /> : <UserDashboard user={user} />} />
+          
             <Route path="/reports" element={<WorkReports user={user} />} />
             
             {/* Protected Admin Modules */}

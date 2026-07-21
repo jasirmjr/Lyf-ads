@@ -20,14 +20,15 @@ export default function Navbar({ user, onUserUpdate }) {
   const [profileForm, setProfileForm] = useState({
     first_name: currentNameParts[0] || '',
     last_name: currentNameParts.slice(1).join(' ') || '',
-    password: '' // Reset to empty string on open
+    password: ''
   });
 
   const handleOpenModal = () => {
     const parts = user?.name ? user.name.split(' ') : ['', ''];
     setProfileForm({
       first_name: parts[0] || '',
-      last_name: parts.slice(1).join(' ') || ''
+      last_name: parts.slice(1).join(' ') || '',
+      password: ''
     });
     setIsModalOpen(true);
   };
@@ -42,7 +43,7 @@ export default function Navbar({ user, onUserUpdate }) {
           employee_id: user.id,
           first_name: profileForm.first_name,
           last_name: profileForm.last_name,
-          password: profileForm.password // Added here
+          password: profileForm.password
         })
       });
 
@@ -59,7 +60,8 @@ export default function Navbar({ user, onUserUpdate }) {
     }
   };
 
-  const isAdmin = user?.role === 'hr' || user?.role === 'manager';
+  // Checks if user is HR / Admin / Manager
+  const isAdmin = user?.role === 'hr' || user?.role === 'manager' || user?.role === 'Admin' || user?.role === 'HR';
   const getLinkClass = ({ isActive }) => (isActive ? styles.activeLink : styles.link);
 
   return (
@@ -110,6 +112,9 @@ export default function Navbar({ user, onUserUpdate }) {
           width: isMobile ? '100%' : 'auto'
         }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#760506', margin: isMobile ? '0.5rem 0 0.5rem 0' : '1.5rem 0 0.5rem 0.5rem', fontWeight: 600 }}>OPERATIONS</div>
+          
+    
+
           <NavLink to="/reports" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
              Daily Reports
           </NavLink>
@@ -129,7 +134,7 @@ export default function Navbar({ user, onUserUpdate }) {
 
         {/* 2. User Row with Inline Edit Button - Desktop Only */}
         {!isMobile && (
-          <div style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', padding: '1rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ marginTop: 'auto', borderTop: '1px solid #e5e7eb', padding: '1rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1.1rem' }}>👤</span>
               <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#111827' }}>{user?.name}</span>

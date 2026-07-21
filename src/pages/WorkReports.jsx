@@ -147,7 +147,7 @@ export default function WorkReports({ user }) {
               <div className={styles.formGroup}><label>Employee Name</label><input type="text" className={styles.disabledField} value={user?.name || ''} disabled /></div>
               <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled /></div>
               <div className={styles.formGroup}><label>Date</label><input type="date" name="date" value={formData.date} min={new Date().toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} required className={styles.inputField} /></div>
-              <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="e.g. CoreHR Authentication" /></div>
+              <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="eg. Whate Done Today" /></div>
               <div className={styles.formGroup}>
                 <label>Work Status</label>
                 <select name="work_status" value={formData.work_status} onChange={handleChange} className={styles.selectField}>
@@ -270,7 +270,7 @@ export default function WorkReports({ user }) {
                             <td style={{ padding: '12px 10px', fontWeight: '600', color: '#374151' }}>
                               {formattedDate}
                             </td>
-                            
+
                             <td style={{ padding: '12px 10px' }}>
                               <strong>{r.employee_name || user?.name}</strong>
                             </td>
