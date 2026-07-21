@@ -23,6 +23,7 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 /* Base text dynamic adjustments for large TV screen monitors */
 @media (min-width: 1921px) {
   html {

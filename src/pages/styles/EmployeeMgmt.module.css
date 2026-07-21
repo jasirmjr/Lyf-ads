@@ -1,8 +1,10 @@
 .pageContainer {
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formSection {
@@ -11,18 +13,19 @@
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 📱 TABLET RESPONSIVE */
+/* 📱 RESPONSIVE PADDING ADJUSTMENTS */
 @media (max-width: 1024px) {
-  .formSection {
+  .formSection, .tableContainer {
     padding: 1.5rem;
   }
 }
 
-/* 📱 MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  .formSection {
+  .formSection, .tableContainer {
     padding: 1rem;
   }
 }
@@ -34,13 +37,15 @@
   color: #111827;
 }
 
-/* Arrange form inputs in a responsive 3-column row grid */
+/* --- DYNAMIC RESPONSIVE GRID FIX --- */
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
+  /* Automatically spans 3-4 columns on desktop, adapts to smaller screens */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
-  align-items: end;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formGroup {
@@ -48,6 +53,8 @@
   flex-direction: column;
   gap: 0.5rem;
   text-align: left;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formGroup label {
@@ -77,34 +84,31 @@
   font-size: 0.9rem;
   border-radius: 6px;
   transition: background-color 0.15s ease;
-  height: 38px; /* Perfectly balances input element heights */
+  height: 40px;
 }
 
 .submitBtn:hover {
   background: #1f2937;
 }
 
-/* Directory Layout styling */
+/* --- TABLE DIRECTORY STYLING --- */
 .tableContainer {
   background: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 📱 TABLET RESPONSIVE */
-@media (max-width: 1024px) {
-  .tableContainer {
-    padding: 1.5rem;
-  }
-}
-
-/* 📱 MOBILE RESPONSIVE */
-@media (max-width: 768px) {
-  .tableContainer {
-    padding: 1rem;
-  }
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .employeeTable {
@@ -140,24 +144,4 @@
 .deleteBtn:hover {
   background: #fee2e2;
   color: #b91c1c;
-}
-.tableScrollWrapper {
-  width: 100%;
-  overflow-x: auto; /* Enables smooth touch horizontal swipe scrolling on mobile grids */
-  -webkit-overflow-scrolling: touch;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.formRowGroup {
-  display: flex;
-  flex-wrap: wrap; /* Auto-collapses inputs downward when columns compress */
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
-.formInputItem {
-  flex: 1 1 250px; /* Allows inputs to fill empty space but wraps them if space is under 250px */
-  min-width: 0;
 }

@@ -1,8 +1,10 @@
 .pageContainer {
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formSection {
@@ -11,33 +13,40 @@
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 📱 TABLET RESPONSIVE */
+/* 📱 RESPONSIVE PADDING ADJUSTMENTS */
 @media (max-width: 1024px) {
-  .formSection {
+  .formSection, .logsSection {
     padding: 1.5rem;
   }
 }
 
-/* 📱 MOBILE RESPONSIVE */
 @media (max-width: 768px) {
-  .formSection {
+  .formSection, .logsSection {
     padding: 1rem;
   }
 }
 
+/* --- FORM GRID LAYOUT FIX --- */
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
+  /* Expands to multi-column layout on wide screens, collapses gracefully on small displays */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formGroup label {
@@ -46,6 +55,12 @@
   color: #4b5563;
 }
 
+/* Force Remarks / Notes to span full width across all columns at the bottom */
+.fullWidth {
+  grid-column: 1 / -1 !important;
+}
+
+/* INPUT CONTROLS STYLING */
 .inputField, .selectField, .disabledField {
   width: 100%;
   padding: 0.65rem 0.75rem;
@@ -53,16 +68,13 @@
   border-radius: 6px;
   box-sizing: border-box;
   font-size: 0.9rem;
+  background-color: #ffffff;
 }
 
 .disabledField {
   background-color: #f3f4f6;
   color: #6b7280;
   cursor: not-allowed;
-}
-
-.fullWidth {
-  grid-column: 1 / -1;
 }
 
 .submitBtn {
@@ -80,25 +92,14 @@
   background: #1f2937;
 }
 
+/* --- LOGS SECTION & FILTERS --- */
 .logsSection {
   background: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-}
-
-/* 📱 TABLET RESPONSIVE */
-@media (max-width: 1024px) {
-  .logsSection {
-    padding: 1.5rem;
-  }
-}
-
-/* 📱 MOBILE RESPONSIVE */
-@media (max-width: 768px) {
-  .logsSection {
-    padding: 1rem;
-  }
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .filterControlBar {
@@ -110,6 +111,7 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  flex-wrap: wrap;
 }
 
 .filterGroup {
@@ -133,9 +135,9 @@
 }
 
 .downloadBtn {
-  margin-left: auto; /* Pushes the button perfectly to the right side of the bar */
+  margin-left: auto;
   padding: 0.5rem 1rem;
-  background-color: #22c55e; /* Vibrant clean green matching export workflows */
+  background-color: #22c55e;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -166,7 +168,7 @@
 
 .pdfBtn {
   padding: 0.5rem 1.25rem;
-  background-color: #ef4444; /* Corporate Red for PDF triggers */
+  background-color: #ef4444;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -184,33 +186,39 @@
   background-color: #dc2626;
 }
 
-/* 🖨️ ABSOLUTE PRINT COMPLIANCE STYLE SHEET ENGINE */
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* 🖨️ PRINT STYLES ENGINE */
 @media print {
   @page {
     size: landscape;
-    margin: 8mm; /* Maximizes printable space canvas */
+    margin: 8mm;
   }
 
-  /* Completely strip app chrome and side panels */
   aside, nav, button, form, .formSection, .filterControlBar, .pdfControlBox, h2 {
     display: none !important;
   }
 
-  /* Reset all potential wrapper blockages so they don't lock dimensions */
   body, main, div, section, .pageContainer, .logsSection {
     margin: 0 !important;
     padding: 0 !important;
     width: auto !important;
     max-width: 100% !important;
     min-width: 100% !important;
-    overflow: visible !important; /* Disables the horizontal scroll bars entirely */
+    overflow: visible !important;
     display: block !important;
     box-shadow: none !important;
     border: none !important;
     background: #ffffff !important;
   }
 
-  /* Target the table layout precisely */
   .logsSection div {
     overflow: visible !important;
     max-width: 100% !important;
@@ -220,12 +228,11 @@
   table {
     width: 100% !important;
     max-width: 100% !important;
-    table-layout: auto !important; /* Force browser to stretch columns to fit landscape text width */
+    table-layout: auto !important;
     border-collapse: collapse !important;
     overflow: visible !important;
   }
 
-  /* Force exact cell padding & formatting rules for the printable doc sheet */
   th {
     background-color: #f3f4f6 !important;
     color: #111827 !important;
@@ -240,7 +247,7 @@
     font-size: 0.75rem !important;
     padding: 6px 8px !important;
     border-bottom: 1px solid #eee !important;
-    white-space: normal !important; /* Breaks long project texts down into paragraphs instead of stretching wide */
+    white-space: normal !important;
     word-break: break-word !important;
   }
 
@@ -248,71 +255,4 @@
     background: transparent !important;
     font-size: 0.7rem !important;
   }
-}
-
-.tableScrollWrapper {
-  width: 100%;
-  overflow-x: auto; /* Enables smooth touch horizontal swipe scrolling on mobile grids */
-  -webkit-overflow-scrolling: touch;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.formRowGroup {
-  display: flex;
-  flex-wrap: wrap; /* Auto-collapses inputs downward when columns compress */
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
-.formInputItem {
-  flex: 1 1 250px; /* Allows inputs to fill empty space but wraps them if space is under 250px */
-  min-width: 0;
-}
-
-/* The grid layout automatically calculates how many inputs can fit in one row */
-.formGrid {
-  display: grid;
-  /* Auto-fit dynamically drops inputs to the next line if they compress below 220px */
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-  width: 100%;
-}
-
-/* Individual wrapper item holding a single label + input combo */
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-/* Ensures labels are aligned nicely */
-.formGroup label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #4b5563;
-}
-
-/* Forces the Remarks field to stretch horizontally on wider monitor displays */
-.fullWidth {
-  grid-column: 1 / -1;
-}
-
-/* General input fields behavior control setup */
-.inputField, .selectField, .disabledField {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  box-sizing: border-box; /* Crucial: ensures internal padding doesn't cause overflow clip errors */
-}
-
-.disabledField {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  cursor: not-allowed;
 }
