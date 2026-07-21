@@ -5,6 +5,8 @@ body {
   background-color: #f3f4f6; /* Soft gray background like the image */
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #1f2937;
+  font-size: 1rem; /* 1rem = 17px */
+  line-height: 1.6; /* Improves paragraph readability */
 }
 
 /* Ensure content box calculations include padding and borders seamlessly */

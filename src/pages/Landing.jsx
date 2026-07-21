@@ -30,6 +30,32 @@ export default function Landing({ onLoginSuccess }) {
     }
   };
 
+
+////////forget password////////
+  const handleForgotPassword = async (e) => {
+  e.preventDefault();
+  
+  const targetEmail = email || prompt("Please enter your registered corporate email:");
+  if (!targetEmail) return;
+
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: targetEmail })
+    });
+
+    const json = await res.json();
+    if (res.ok) {
+      alert(`Success! A temporary login code has been sent to ${targetEmail}. Use it as your password to log in.`);
+    } else {
+      alert(json.error || 'Failed to send reset email.');
+    }
+  } catch (err) {
+    alert('Could not reach authentication server.');
+  }
+};
+
   return (
     <div className={styles.singlePageContainer}>
       <div className={styles.loginCentralCard}>
@@ -37,21 +63,24 @@ export default function Landing({ onLoginSuccess }) {
         {/* Top Header Row with Logo */}
         <div className={styles.logoRow}>
           <img 
-            src="/logo.png" 
-            alt="DrewHub Logo" 
+            src="/Logo.png" 
+            alt="Company Logo" 
             className={styles.brandLogo}
             onError={(e) => {
+              // Fallback icon if the image path fails
               e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'inline-block';
+              if (e.target.nextSibling) {
+                e.target.nextSibling.style.display = 'inline-block';
+              }
             }}
           />
           <span className={styles.fallbackLogoIcon} style={{ display: 'none' }}>🎬</span>
-          <span className={styles.brandName}>DrewHub</span>
+          <span className={styles.brandName}>LYF ADS</span>
         </div>
 
         {/* Greetings and Sub-heading */}
-        <h1 className={styles.mainGreeting}>Holla,<br />Welcome Back</h1>
-        <p className={styles.subGreeting}>Hey, welcome back to your production workspace</p>
+        <h1 className={styles.mainGreeting}>Welcome Back</h1>
+        <p className={styles.subGreeting}>Hey, welcome back to your workspace</p>
 
         {/* Input Forms */}
         <form onSubmit={handleLoginSubmit} className={styles.authForm}>
@@ -83,7 +112,7 @@ export default function Landing({ onLoginSuccess }) {
               <input type="checkbox" className={styles.checkboxControl} />
               Remember me
             </label>
-            <a href="#forgot" onClick={(e) => { e.preventDefault(); alert('Please contact your system HR Admin to reset passwords.'); }} className={styles.forgotPasswordLink}>
+            <a href="#forgot" onClick={handleForgotPassword} className={styles.forgotPasswordLink}>
               Forgot Password?
             </a>
           </div>

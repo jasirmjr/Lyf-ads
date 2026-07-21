@@ -179,7 +179,7 @@ export default function WorkReports({ user }) {
               <label>📅 PDF Time Scope:</label>
               <select value={pdfTimeMode} onChange={e => setPdfTimeMode(e.target.value)} className={styles.filterSelect}>
                 <option value="SpecificDay">Specific Single Day</option>
-                <option value="MonthView">Entire Month (Day-by-Day)</option>
+                <option value="MonthView">Entire Month</option>
               </select>
             </div>
 
@@ -196,11 +196,11 @@ export default function WorkReports({ user }) {
             )}
 
             <div className={styles.filterGroup}>
-              <label>⚡ Report Filters:</label>
+              <label> Report Filters:</label>
               <select value={pdfStatusFilter} onChange={e => setPdfStatusFilter(e.target.value)} className={styles.filterSelect}>
-                <option value="All">All Statuses (Pending & Completed)</option>
-                <option value="Submitted">Completed / Submitted Only</option>
-                <option value="Pending">Pending / Missing Only</option>
+                <option value="All">All Statuses</option>
+                <option value="Submitted">Completed </option>
+                <option value="Pending">Pending </option>
               </select>
             </div>
 
@@ -239,6 +239,7 @@ export default function WorkReports({ user }) {
               <table className="employeeTable" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
+                    <th style={{ padding: '12px 10px', textAlign: 'left' }}>Date</th>
                     <th style={{ padding: '12px 10px' }}>Employee</th>
                     <th style={{ padding: '12px 10px' }}>Department</th>
                     <th style={{ padding: '12px 10px' }}>Daily Status</th>
@@ -258,9 +259,18 @@ export default function WorkReports({ user }) {
                       return filteredReports.map((r, index) => {
                         // FIX: Safely determine submission if submission_status is explicit OR if valid report fields exist
                         const hasSubmitted = r.submission_status === 'Submitted' || !!r.project_name || !!r.id;
+                        // Format date cleanly to DD-MM-YYYY or ISO format
+                        const rawDate = r.report_date || r.date;
+                        const formattedDate = rawDate 
+                          ? new Date(rawDate).toLocaleDateString('en-GB') // Outputs DD/MM/YYYY
+                          : '—';
                         
                         return (
                           <tr key={index} style={{ borderBottom: '1px solid #eee', opacity: hasSubmitted ? 1 : 0.75 }}>
+                            <td style={{ padding: '12px 10px', fontWeight: '600', color: '#374151' }}>
+                              {formattedDate}
+                            </td>
+                            
                             <td style={{ padding: '12px 10px' }}>
                               <strong>{r.employee_name || user?.name}</strong>
                             </td>

@@ -76,7 +76,7 @@
 
 .submitBtn {
   padding: 0.7rem 2rem;
-  background: #111827;
+  background: #760506;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -132,7 +132,7 @@
 
 .deleteBtn {
   background: transparent;
-  color: #dc2626;
+  color: #760506;
   border: 1px solid #fee2e2;
   padding: 4px 10px;
   border-radius: 4px;

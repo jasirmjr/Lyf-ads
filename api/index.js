@@ -424,5 +424,73 @@ app.put('/api/auth/profile', async (req, res) => {
   }
 });
 
+////
+
+const nodemailer = require('nodemailer');
+
+// Configure email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// POST: Send Password Reset Email with Code
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email address is required.' });
+  }
+
+  try {
+    // 1. Check if employee exists
+    const userCheck = await pool.query(
+      'SELECT id, first_name FROM employees WHERE LOWER(email) = $1',
+      [email.trim().toLowerCase()]
+    );
+
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'No employee account found with this email.' });
+    }
+
+    const employee = userCheck.rows[0];
+
+    // 2. Generate a random temporary 6-digit reset code & reset password to it
+    const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await pool.query(
+      'UPDATE employees SET password = $1 WHERE id = $2',
+      [tempCode, employee.id]
+    );
+
+    // 3. Send email via Nodemailer
+    const mailOptions = {
+      from: `"LYF ADS HR Portal" <${process.env.EMAIL_USER}>`,
+      to: email.trim().toLowerCase(),
+      subject: 'LYF ADS - Temporary Password Reset Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; color: #111827;">
+          <h2>Password Reset Request</h2>
+          <p>Hello ${employee.first_name},</p>
+          <p>You requested to reset your password for your DrewHub Workspace account.</p>
+          <p>Your temporary login passcode is:</p>
+          <h1 style="background: #f3f4f6; display: inline-block; padding: 10px 20px; border-radius: 8px; color: #7c3aed; letter-spacing: 2px;">${tempCode}</h1>
+          <p>Please use this temporary password to log in and update your credentials inside your account profile.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ status: 'success', message: 'Temporary passcode sent to your email address.' });
+
+  } catch (err) {
+    console.error("EMAIL RESET FAILURE:", err);
+    res.status(500).json({ error: 'Failed to send reset email. Check server email configuration.' });
+  }
+});
+
 // CRITICAL FOR VERCEL: Export the app instead of app.listen()
 module.exports = app;

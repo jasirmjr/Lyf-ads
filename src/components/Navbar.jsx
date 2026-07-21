@@ -80,7 +80,7 @@ export default function Navbar({ user, onUserUpdate }) {
         alignItems: isMobile ? 'center' : 'flex-start'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: isMobile ? '0' : '2rem', marginRight: isMobile ? '1rem' : '0' }}>
-          <span style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: 700, color: '#111827', margin: 0 }}>DrewHub</span>
+          <span style={{ fontSize: isMobile ? '1.1rem' : '1.25rem', fontWeight: 700, color: '#111827', margin: 0 }}>LYF ADS</span>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -109,19 +109,19 @@ export default function Navbar({ user, onUserUpdate }) {
           zIndex: isMobile ? 999 : 1,
           width: isMobile ? '100%' : 'auto'
         }}>
-          <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', margin: isMobile ? '0.5rem 0 0.5rem 0' : '1.5rem 0 0.5rem 0.5rem', fontWeight: 600 }}>OPERATIONS</div>
+          <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#760506', margin: isMobile ? '0.5rem 0 0.5rem 0' : '1.5rem 0 0.5rem 0.5rem', fontWeight: 600 }}>OPERATIONS</div>
           <NavLink to="/reports" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
              Daily Reports
           </NavLink>
           
           {isAdmin && (
             <>
-              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#9ca3af', margin: '1.5rem 0 0.5rem 0.5rem', fontWeight: 600 }}>HUMAN RESOURCES</div>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#760506', margin: '1.5rem 0 0.5rem 0.5rem', fontWeight: 600 }}>HUMAN RESOURCES</div>
               <NavLink to="/employees" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
                 👥 Employees
               </NavLink>
               <NavLink to="/settings" className={getLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                ⚙️ Org Settings
+                ⚙️ Departments
               </NavLink>
             </>
           )}
@@ -136,7 +136,7 @@ export default function Navbar({ user, onUserUpdate }) {
             </div>
             <button 
               onClick={handleOpenModal} 
-              style={{ background: 'transparent', border: 'none', color: '#2563eb', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: '4px 8px', borderRadius: '4px' }}
+              style={{ background: 'transparent', border: 'none', color: '#760506', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: '4px 8px', borderRadius: '4px' }}
             >
               Edit
             </button>
@@ -179,7 +179,7 @@ export default function Navbar({ user, onUserUpdate }) {
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
                 <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '0.5rem 1rem', background: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}>Cancel</button>
-                <button type="submit" style={{ padding: '0.5rem 1.25rem', background: '#111827', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 500, cursor: 'pointer' }}>Save Changes</button>
+                <button type="submit" style={{ padding: '0.5rem 1.25rem', background: '#760506', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 500, cursor: 'pointer' }}>Save Changes</button>
               </div>
 
             </form>

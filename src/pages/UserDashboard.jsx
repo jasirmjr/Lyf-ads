@@ -27,10 +27,12 @@ export default function UserDashboard({ user }) {
           </div>
 
           {/* Locked/Future Feature Block */}
+          {/*
           <div className={styles.actionCardDisabled}>
             <h4 className={styles.cardTitleDisabled}>🌴 Leave & Time-Off</h4>
             <p className={styles.cardDescription}>Check balances and request leaves (Coming Soon).</p>
           </div>
+          */}
 
         </div>
       </div>

@@ -52,12 +52,14 @@
 .logoRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 2.5rem;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2rem;
 }
 
 .brandLogo {
-  height: 28px;
+  height: 42px; /* Adjust height based on your image aspect ratio */
+  max-width: 100%;
   object-fit: contain;
 }
 
@@ -66,7 +68,7 @@
 }
 
 .brandName {
-  font-size: 1.2rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.02em;
@@ -162,7 +164,7 @@
 .submitActionButton {
   width: 100%;
   padding: 14px;
-  background-color: #7c3aed;
+  background-color: #760506;
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -184,12 +186,12 @@
 .formFooterHint {
   margin-top: 2.5rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: #6474;
   text-align: center;
 }
 
 .contactHRText {
-  color: #7c3aed;
+  color: #760506;
   font-weight: 600;
   cursor: pointer;
 }
