@@ -146,7 +146,7 @@ export default function EmployeeMgmt() {
               <table className={styles.employeeTable}>
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    {/* <th>ID</th> */}
                     <th>Full Name</th>
                     <th>Email Address</th>
                     <th>Phone</th>
@@ -158,7 +158,7 @@ export default function EmployeeMgmt() {
                 <tbody>
                   {employees.map(emp => (
                     <tr key={emp.id}>
-                      <td><code>#{emp.id}</code></td>
+                      {/* <td><code>#{emp.id}</code></td> */}
                       <td><strong>{emp.first_name} {emp.last_name}</strong></td>
                       <td>{emp.email}</td>
                       <td>{emp.phone || '—'}</td>
