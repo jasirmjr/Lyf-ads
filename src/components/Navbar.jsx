@@ -162,29 +162,58 @@ export default function Navbar({ user, onUserUpdate }) {
 
       {/* 3. FLOATING EDIT PROFILE DIALOG OVERLAY MODAL */}
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
-          <div style={{ background: '#ffffff', padding: '2rem', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '1.25rem', color: '#111827', fontSize: '1.1rem', fontWeight: '700' }}>Update Profile Settings</h3>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3 style={{ marginTop: 0, marginBottom: '1.25rem', color: '#111827', fontSize: '1.1rem', fontWeight: '700' }}>
+              Update Profile Settings
+            </h3>
             <form onSubmit={handleSaveProfile}>
               
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>First Name</label>
-                <input type="text" value={profileForm.first_name} onChange={e => setProfileForm({...profileForm, first_name: e.target.value})} required style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>
+                  First Name
+                </label>
+                <input 
+                  type="text" 
+                  value={profileForm.first_name} 
+                  onChange={e => setProfileForm({...profileForm, first_name: e.target.value})} 
+                  required 
+                  style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} 
+                />
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>Last Name</label>
-                <input type="text" value={profileForm.last_name} onChange={e => setProfileForm({...profileForm, last_name: e.target.value})} style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>
+                  Last Name
+                </label>
+                <input 
+                  type="text" 
+                  value={profileForm.last_name} 
+                  onChange={e => setProfileForm({...profileForm, last_name: e.target.value})} 
+                  style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} 
+                />
               </div>
 
+              {/* 🔑 UPDATE THIS PASSWORD INPUT HERE: */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>New Password (Leave blank to keep current)</label>
-                <input type="password" placeholder="••••••••" value={profileForm.password} onChange={e => setProfileForm({...profileForm, password: e.target.value})} style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} />
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginBottom: '4px' }}>
+                  New Password (Leave blank to keep current)
+                </label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••••••" 
+                  value={profileForm.password} 
+                  onChange={e => setProfileForm({...profileForm, password: e.target.value})} 
+                  autoComplete="current-password" /* 👈 ADD THIS HERE */
+                  style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', boxSizing: 'border-box' }} 
+                />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '0.5rem 1rem', background: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}>Cancel</button>
-                <button type="submit" style={{ padding: '0.5rem 1.25rem', background: '#760506', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 500, cursor: 'pointer' }}>Save Changes</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className={styles.cancelBtn}>Cancel</button>
+                <button type="submit" style={{ padding: '0.5rem 1.25rem', background: '#760506', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 500, cursor: 'pointer' }}>
+                  Save Changes
+                </button>
               </div>
 
             </form>

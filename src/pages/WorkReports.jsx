@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import styles from './styles/WorkReports.module.css';
 
 export default function WorkReports({ user }) {
+
+  const isAdmin = user?.role === 'hr' || user?.role === 'manager' || user?.role === 'Admin' || user?.role === 'HR';
+
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -135,6 +138,92 @@ export default function WorkReports({ user }) {
     }
   };
 
+  // Download monthly report in single sheet
+  const handleDownloadMonthlyPDF = async () => {
+  try {
+    // 1. Get the month picker input value or fallback to current month
+    // Ensure this reads the state or input element corresponding to your 'Target Month' picker
+    let monthNum = new Date().getMonth() + 1;
+    let yearNum = new Date().getFullYear();
+
+    // If targetMonth state exists (e.g., "2026-07")
+    if (typeof targetMonth !== 'undefined' && targetMonth) {
+      const parts = targetMonth.split('-');
+      yearNum = parseInt(parts[0], 10);
+      monthNum = parseInt(parts[1], 10);
+    } else if (typeof selectedDate !== 'undefined' && selectedDate) {
+      const d = new Date(selectedDate);
+      if (!isNaN(d.getTime())) {
+        monthNum = d.getMonth() + 1;
+        yearNum = d.getFullYear();
+      }
+    }
+
+    console.log(`Downloading PDF for Month: ${monthNum}, Year: ${yearNum}`);
+
+    // 2. Fetch data from backend
+    const res = await fetch(`/api/reports/monthly-matrix?month=${monthNum}&year=${yearNum}`);
+    const json = await res.json();
+
+    if (json.status === 'success') {
+      if (!json.employees || json.employees.length === 0) {
+        alert("No employee records found for this period.");
+        return;
+      }
+      generateMonthlyAttendancePDF(monthNum, yearNum, json.employees, json.submissions);
+    } else {
+      alert(json.details || json.error || 'Failed to generate PDF sheet.');
+    }
+  } catch (err) {
+    console.error("PDF Download Error:", err);
+    alert('Error connecting to backend for PDF generation.');
+  }
+};
+
+
+// Manualy admin mark if they absent
+const handleMarkAbsent = async (employeeId, reportDate) => {
+  // Get valid YYYY-MM-DD date string
+  const targetDate = reportDate && reportDate !== '—' 
+    ? reportDate 
+    : (typeof screenViewDate !== 'undefined' && screenViewDate ? screenViewDate : new Date().toISOString().split('T')[0]);
+
+  if (!employeeId) {
+    alert("Employee ID is missing.");
+    return;
+  }
+
+  if (!window.confirm(`Are you sure you want to mark this employee as Absent for ${targetDate}?`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/reports/mark-absent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        employee_id: employeeId,
+        date: targetDate
+      })
+    });
+
+    const json = await res.json();
+    if (json.status === 'success') {
+      alert('Employee status updated to Absent successfully!');
+      if (typeof fetchReports === 'function') {
+        fetchReports();
+      } else {
+        window.location.reload();
+      }
+    } else {
+      alert(json.details || json.error || 'Failed to update status.');
+    }
+  } catch (err) {
+    console.error("Mark Absent Error:", err);
+    alert('Server communication error.');
+  }
+};
+
   return (
     <div className={styles.pageContainer}>
       {/* REPORT SUBMISSION CARD */}
@@ -144,8 +233,13 @@ export default function WorkReports({ user }) {
           <form onSubmit={handleSubmit}>
             {/* Form groups remain as built previously */}
             <div className={styles.formGrid}>
-              <div className={styles.formGroup}><label>Employee Name</label><input type="text" className={styles.disabledField} value={user?.name || ''} disabled /></div>
-              <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} value={user?.department || 'General Operations'} disabled /></div>
+              <input 
+                type="text" 
+                value={user?.name || ''} 
+                className={styles.disabledField} 
+                readOnly /* 👈 Added readOnly attribute */
+              />
+              <div className={styles.formGroup}><label>Department</label><input type="text" className={styles.disabledField} readOnly value={user?.department || 'General Operations'} disabled /></div>
               <div className={styles.formGroup}><label>Date</label><input type="date" name="date" value={formData.date} min={new Date().toISOString().split('T')[0]} max={new Date().toISOString().split('T')[0]} required className={styles.inputField} /></div>
               <div className={styles.formGroup}><label>Task / Project Name</label><input type="text" name="project_name" value={formData.project_name} onChange={handleChange} required className={styles.inputField} placeholder="eg. Whate Done Today" /></div>
               <div className={styles.formGroup}>
@@ -162,6 +256,7 @@ export default function WorkReports({ user }) {
               <div className={`${styles.formGroup} ${styles.fullWidth}`}><label>Remarks / Notes</label><textarea name="remarks" value={formData.remarks} onChange={handleChange} className={styles.inputField} style={{ minHeight: '60px' }} placeholder="Detail specific items completed..." /></div>
             </div>
             <button type="submit" className={styles.submitBtn}>Submit Report</button>
+
           </form>
         </div>
       </section>
@@ -191,7 +286,13 @@ export default function WorkReports({ user }) {
             ) : (
               <div className={styles.filterGroup}>
                 <label>Target Month:</label>
-                <input type="month" value={pdfSelectedMonth} onChange={e => setPdfSelectedMonth(e.target.value)} className={styles.filterDateInput} />
+                 {/* <input type="month" value={pdfSelectedMonth} onChange={e => setPdfSelectedMonth(e.target.value)} className={styles.filterDateInput} /> */}
+                <input 
+                  type="month" 
+                  value={selectedDate || ''} 
+                  onChange={(e) => setSelectedDate(e.target.value)} 
+                  className={styles.inputField} 
+                />
               </div>
             )}
 
@@ -311,6 +412,50 @@ export default function WorkReports({ user }) {
                             {/* 5. Remarks / Notes Column */}
                             <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
                               {hasSubmitted ? (r.remarks || 'None') : '—'}
+                            </td>
+
+                            {/* Daily Status Column */}
+                            <td style={{ padding: '12px 10px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                
+                                {/* Badge Rendering */}
+                                <span style={{
+                                  display: 'inline-block', 
+                                  padding: '4px 10px', 
+                                  borderRadius: '20px', 
+                                  fontSize: '0.75rem', 
+                                  fontWeight: '700',
+                                  backgroundColor: 
+                                    r.submission_status === 'Submitted' ? '#d1fae5' :
+                                    r.submission_status === 'Absent' ? '#fee2e2' : '#fef3c7',
+                                  color: 
+                                    r.submission_status === 'Submitted' ? '#065f46' :
+                                    r.submission_status === 'Absent' ? '#991b1b' : '#92400e'
+                                }}>
+                                  {r.submission_status || (r.id ? 'Submitted' : 'Pending')}
+                                </span>
+
+                                {/* Admin "Mark Absent" Action Button for Pending Entries */}
+                                {isAdmin && (r.submission_status === 'Pending' || !r.submission_status) && (
+                                  <button
+                                    onClick={() => handleMarkAbsent(r.employee_id || r.id, r.report_date)}
+                                    style={{
+                                      background: '#fee2e2',
+                                      color: '#991b1b',
+                                      border: '1px solid #fca5a5',
+                                      borderRadius: '6px',
+                                      padding: '2px 8px',
+                                      fontSize: '0.7rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer',
+                                      marginLeft: '6px'
+                                    }}
+                                  >
+                                    Mark Absent
+                                  </button>
+                                )}
+
+                              </div>
                             </td>
                           </tr>
                         );

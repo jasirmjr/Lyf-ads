@@ -493,6 +493,127 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 });
 
 
+// POST: Admin manually marks an employee as Absent for a specific date
+// POST: Admin manually marks an employee as Absent for a specific date
+app.post('/api/reports/mark-absent', async (req, res) => {
+  try {
+    const { employee_id, date } = req.body;
+
+    if (!employee_id || !date) {
+      return res.status(400).json({ error: 'Employee ID and Date are required.' });
+    }
+
+    console.log(`📌 Marking Absent in daily_reports: employee_id=${employee_id}, date=${date}`);
+
+    // 1. Check if a report record already exists for this date
+    let checkRes;
+    try {
+      checkRes = await pool.query(
+        `SELECT id FROM daily_reports WHERE employee_id = $1 AND DATE(date) = $2::date`,
+        [employee_id, date]
+      );
+    } catch (colErr) {
+      checkRes = await pool.query(
+        `SELECT id FROM daily_reports WHERE employee_id = $1 AND DATE(created_at) = $2::date`,
+        [employee_id, date]
+      );
+    }
+
+    if (checkRes.rows.length > 0) {
+      // 2A. Update existing record to Absent
+      await pool.query(
+        `UPDATE daily_reports 
+         SET work_status = 'Absent', 
+             project_name = COALESCE(project_name, 'Absent'),
+             remarks = 'Marked Absent by Admin' 
+         WHERE id = $1`,
+        [checkRes.rows[0].id]
+      );
+    } else {
+      // 2B. Insert new record with non-null project_name and required time fields
+      try {
+        await pool.query(
+          `INSERT INTO daily_reports (employee_id, date, project_name, work_status, start_time, end_time, remarks) 
+           VALUES ($1, $2::date, 'Absent', 'Absent', '00:00:00', '00:00:00', 'Marked Absent by Admin')`,
+          [employee_id, date]
+        );
+      } catch (insertErr) {
+        await pool.query(
+          `INSERT INTO daily_reports (employee_id, created_at, project_name, work_status, start_time, end_time, remarks) 
+           VALUES ($1, $2::date, 'Absent', 'Absent', '00:00:00', '00:00:00', 'Marked Absent by Admin')`,
+          [employee_id, date]
+        );
+      }
+    }
+
+    console.log(`✅ Success! Employee ID ${employee_id} marked as Absent.`);
+    return res.json({ status: 'success', message: 'Employee marked as Absent.' });
+
+  } catch (err) {
+    console.error("❌ MARK ABSENT ERROR:", err.message);
+    return res.status(500).json({ 
+      error: 'Failed to update status to Absent.',
+      details: err.message 
+    });
+  }
+});
+
+// GET: Monthly Attendance Matrix Data for Admin Export
+app.get('/api/reports/monthly-matrix', async (req, res) => {
+  try {
+    const month = parseInt(req.query.month, 10);
+    const year = parseInt(req.query.year, 10);
+
+    if (!month || !year || isNaN(month) || isNaN(year)) {
+      return res.status(400).json({ error: 'Valid Month and Year are required.' });
+    }
+
+    // 1. Fetch all active employees
+    const employeesRes = await pool.query(`
+      SELECT id, 
+             TRIM(CONCAT(COALESCE(first_name, ''), ' ', COALESCE(last_name, ''))) AS name 
+      FROM employees 
+      ORDER BY first_name ASC
+    `);
+
+    // 2. Fetch submitted report dates from daily_reports
+    let reportsRes;
+    try {
+      reportsRes = await pool.query(`
+        SELECT DISTINCT 
+               employee_id, 
+               EXTRACT(DAY FROM DATE(COALESCE(date, created_at)))::int AS day
+        FROM daily_reports
+        WHERE EXTRACT(MONTH FROM DATE(COALESCE(date, created_at))) = $1
+          AND EXTRACT(YEAR FROM DATE(COALESCE(date, created_at))) = $2
+          AND employee_id IS NOT NULL
+          AND COALESCE(work_status, '') != 'Absent'
+      `, [month, year]);
+    } catch (e) {
+      reportsRes = await pool.query(`
+        SELECT DISTINCT 
+               employee_id, 
+               EXTRACT(DAY FROM DATE(created_at))::int AS day
+        FROM daily_reports
+        WHERE EXTRACT(MONTH FROM DATE(created_at)) = $1
+          AND EXTRACT(YEAR FROM DATE(created_at)) = $2
+          AND employee_id IS NOT NULL
+          AND COALESCE(work_status, '') != 'Absent'
+      `, [month, year]);
+    }
+
+    return res.json({
+      status: 'success',
+      employees: employeesRes.rows,
+      submissions: reportsRes.rows
+    });
+
+  } catch (err) {
+    console.error("❌ MONTHLY MATRIX DB ERROR:", err.message);
+    return res.status(500).json({ error: 'Failed to generate monthly matrix data.', details: err.message });
+  }
+});
+
 
 
 // CRITICAL FOR VERCEL: Export the app instead of app.listen()
