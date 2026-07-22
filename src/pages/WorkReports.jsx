@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import styles from './styles/WorkReports.module.css';
 
 export default function WorkReports({ user }) {
@@ -87,7 +89,7 @@ export default function WorkReports({ user }) {
     return r.submission_status === statusFilter;
   });
 
-  // NEW: Advanced PDF Generation Engine
+  // NEW: Advanced PDF Generation Engine using jsPDF
   const triggerPDFDownload = async () => {
     try {
       setLoading(true);
@@ -120,66 +122,142 @@ export default function WorkReports({ user }) {
           return;
         }
 
-        // CRITICAL FIX: Turn on printing mode layouts, swap data rows, then execute print
-        setReports(targetedPdfRows);
-        setIsPrinting(true); 
+        // Generate PDF using jsPDF
+        const doc = new jsPDF();
+        
+        // Calculate statistics
+        const totalEmployees = targetedPdfRows.length;
+        const submittedCount = targetedPdfRows.filter(r => 
+          r.submission_status === 'Submitted' || !!r.project_name || !!r.id
+        ).length;
+        const pendingCount = totalEmployees - submittedCount;
+        const absentCount = targetedPdfRows.filter(r => r.work_status === 'Absent').length;
+        
+        // Add colored header box
+        doc.setFillColor(66, 139, 202);
+        doc.rect(0, 0, 210, 45, 'F');
+        
+        // Add title
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text('LYF ADS', 14, 20);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Team Attendance & Report Status', 14, 30);
+        
+        // Add date info in white
+        doc.setFontSize(10);
+        const dateInfo = pdfTimeMode === 'SpecificDay' 
+          ? `Date: ${pdfSelectedDate}` 
+          : `Month: ${pdfSelectedMonth}`;
+        doc.text(dateInfo, 14, 40);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 120, 40);
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        
+        // Add summary statistics box
+        doc.setFillColor(245, 245, 245);
+        doc.roundedRect(14, 52, 182, 25, 3, 3, 'F');
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Summary Statistics', 20, 60);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(`Total Employees: ${totalEmployees}`, 20, 68);
+        doc.text(`Submitted: ${submittedCount}`, 80, 68);
+        doc.text(`Pending: ${pendingCount}`, 130, 68);
+        doc.text(`Absent: ${absentCount}`, 170, 68);
+        
+        // Add colored badges for statistics
+        doc.setFillColor(40, 167, 69);
+        doc.circle(75, 67.5, 2, 'F');
+        doc.setFillColor(255, 193, 7);
+        doc.circle(125, 67.5, 2, 'F');
+        doc.setFillColor(220, 53, 69);
+        doc.circle(165, 67.5, 2, 'F');
 
-        setTimeout(() => {
-          window.print();
-          setIsPrinting(false); // Reset layout rules back to normal screen standards
-          fetchReports(); 
-        }, 400);
+        // Prepare table data with status colors
+        const tableData = targetedPdfRows.map(row => {
+          const rawDate = row.report_date || row.date;
+          const formattedDate = rawDate 
+            ? new Date(rawDate).toLocaleDateString('en-GB')
+            : '—';
+          const hasSubmitted = row.submission_status === 'Submitted' || !!row.project_name || !!row.id;
+          const isAbsent = row.work_status === 'Absent';
+          
+          return [
+            formattedDate,
+            row.employee_name || user?.name,
+            row.department_name || user?.department || 'Unassigned',
+            isAbsent ? 'Absent' : (hasSubmitted ? 'Submitted' : 'Pending'),
+            hasSubmitted ? row.project_name : '— Not Started —',
+            hasSubmitted && row.work_status ? row.work_status : '—',
+            hasSubmitted && row.start_time && row.end_time 
+              ? `${row.start_time.substring(0, 5)} - ${row.end_time.substring(0, 5)}` 
+              : '—',
+            hasSubmitted ? (row.remarks || 'None') : '—'
+          ];
+        });
+
+        // Add table with enhanced styling
+        autoTable(doc, {
+          startY: 85,
+          head: [['Date', 'Employee', 'Department', 'Status', 'Project/Task', 'Work Status', 'Duration', 'Remarks']],
+          body: tableData,
+          styles: { fontSize: 8, cellPadding: 3 },
+          headStyles: { 
+            fillColor: [66, 139, 202], 
+            textColor: 255, 
+            fontStyle: 'bold',
+            halign: 'center'
+          },
+          columnStyles: {
+            0: { cellWidth: 18, halign: 'center' }, // Date
+            1: { cellWidth: 28 }, // Employee
+            2: { cellWidth: 25 }, // Department
+            3: { cellWidth: 18, halign: 'center' }, // Status
+            4: { cellWidth: 28 }, // Project/Task
+            5: { cellWidth: 20, halign: 'center' }, // Work Status
+            6: { cellWidth: 25, halign: 'center' }, // Duration
+            7: { cellWidth: 35 }  // Remarks
+          },
+          didParseCell: function(data) {
+            // Add color coding to status column
+            if (data.section === 'body' && data.column.index === 3) {
+              const status = data.cell.raw;
+              if (status === 'Submitted') {
+                data.cell.styles.textColor = [40, 167, 69];
+                data.cell.styles.fontStyle = 'bold';
+              } else if (status === 'Absent') {
+                data.cell.styles.textColor = [220, 53, 69];
+                data.cell.styles.fontStyle = 'bold';
+              } else {
+                data.cell.styles.textColor = [255, 193, 7];
+                data.cell.styles.fontStyle = 'bold';
+              }
+            }
+          },
+          alternateRowStyles: { fillColor: [248, 249, 250] },
+          theme: 'grid'
+        });
+
+        // Save PDF
+        const fileName = pdfTimeMode === 'SpecificDay'
+          ? `LYF-ADS-Report-${pdfSelectedDate}.pdf`
+          : `LYF-ADS-Report-${pdfSelectedMonth}.pdf`;
+        doc.save(fileName);
       }
     } catch (err) {
-      alert('Failed to generate document metrics.');
-      setIsPrinting(false);
+      console.error('PDF Generation Error:', err);
+      alert('Failed to generate PDF. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  // Download monthly report in single sheet
-  const handleDownloadMonthlyPDF = async () => {
-  try {
-    // 1. Get the month picker input value or fallback to current month
-    // Ensure this reads the state or input element corresponding to your 'Target Month' picker
-    let monthNum = new Date().getMonth() + 1;
-    let yearNum = new Date().getFullYear();
-
-    // If targetMonth state exists (e.g., "2026-07")
-    if (typeof targetMonth !== 'undefined' && targetMonth) {
-      const parts = targetMonth.split('-');
-      yearNum = parseInt(parts[0], 10);
-      monthNum = parseInt(parts[1], 10);
-    } else if (typeof selectedDate !== 'undefined' && selectedDate) {
-      const d = new Date(selectedDate);
-      if (!isNaN(d.getTime())) {
-        monthNum = d.getMonth() + 1;
-        yearNum = d.getFullYear();
-      }
-    }
-
-    console.log(`Downloading PDF for Month: ${monthNum}, Year: ${yearNum}`);
-
-    // 2. Fetch data from backend
-    const res = await fetch(`/api/reports/monthly-matrix?month=${monthNum}&year=${yearNum}`);
-    const json = await res.json();
-
-    if (json.status === 'success') {
-      if (!json.employees || json.employees.length === 0) {
-        alert("No employee records found for this period.");
-        return;
-      }
-      generateMonthlyAttendancePDF(monthNum, yearNum, json.employees, json.submissions);
-    } else {
-      alert(json.details || json.error || 'Failed to generate PDF sheet.');
-    }
-  } catch (err) {
-    console.error("PDF Download Error:", err);
-    alert('Error connecting to backend for PDF generation.');
-  }
-};
-
 
 // Manualy admin mark if they absent
 const handleMarkAbsent = async (employeeId, reportDate) => {
