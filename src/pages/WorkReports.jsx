@@ -144,7 +144,7 @@ export default function WorkReports({ user }) {
         doc.text('LYF ADS', 14, 20);
         doc.setFontSize(14);
         doc.setFont('helvetica', 'normal');
-        doc.text('Team Attendance & Report Status', 14, 30);
+        doc.text('Daily Report Status', 14, 30);
         
         // Add date info in white
         doc.setFontSize(10);
@@ -342,7 +342,7 @@ const handleMarkAbsent = async (employeeId, reportDate) => {
       {/* TRACKER & EXPORT CONTROL INTERFACE MODULE */}
       <section className={styles.logsSection}>
         <h3 style={{ marginTop: 0, marginBottom: '1.25rem' }}>
-          {isHRView ? 'Team Attendance & Report Status' : 'My Work Logs History'}
+          {isHRView ? 'Daily Report Status' : 'My Work Logs History'}
         </h3>
 
         {/* NEW: ADVANCED PDF EXPORT CONFIGURATION PANEL (HR Eye-Level View Only) */}
