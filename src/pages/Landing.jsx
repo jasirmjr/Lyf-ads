@@ -112,9 +112,9 @@ export default function Landing({ onLoginSuccess }) {
               <input type="checkbox" className={styles.checkboxControl} />
               Remember me
             </label>
-            <a href="#forgot" onClick={handleForgotPassword} className={styles.forgotPasswordLink}>
+            {/* <button type="button" onClick={handleForgotPassword} className={styles.forgotPasswordLink}>
               Forgot Password?
-            </a>
+            </button> */}
           </div>
 
           {/* Core Sign In Action Button */}
