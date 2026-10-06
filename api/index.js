@@ -1,6 +1,8 @@
 // api/index.js
 const express = require('express');
 const { Pool } = require('pg');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config();
 
 const app = express();
@@ -617,6 +619,14 @@ app.get('/api/reports/monthly-matrix', async (req, res) => {
 });
 
 
+
+// Start local server if run directly (e.g. node api/index.js)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Backend server running on http://localhost:${PORT}`);
+  });
+}
 
 // CRITICAL FOR VERCEL: Export the app instead of app.listen()
 module.exports = app;

@@ -25,8 +25,8 @@ export default function WorkReports({ user }) {
     date: new Date().toISOString().split('T')[0],
     project_name: '',
     work_status: 'Completed',
-    start_time: '09:00',
-    end_time: '17:00',
+    start_time: '10:30',
+    end_time: '19:30',
     remarks: ''
   });
 
@@ -64,20 +64,23 @@ export default function WorkReports({ user }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, employee_id: user.id })
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (res.ok && json.status === 'success') {
         alert('Daily work report logged successfully!');
-        setFormData({
-          date: new Date().toISOString().split('T')[0],
+        setFormData(prev => ({
+          ...prev,
           project_name: '',
           work_status: 'Completed',
-          start_time: '09:00',
-          end_time: '17:00',
+          start_time: '10:30',
+          end_time: '19:30',
           remarks: ''
-        });
+        }));
         fetchReports();
+      } else {
+        alert(json.error || 'Failed to submit report.');
       }
     } catch (err) {
-      alert(err.message);
+      alert(err.message || 'Failed to connect to server.');
     }
   };
 
@@ -264,7 +267,7 @@ const handleMarkAbsent = async (employeeId, reportDate) => {
   // Get valid YYYY-MM-DD date string
   const targetDate = reportDate && reportDate !== '—' 
     ? reportDate 
-    : (typeof screenViewDate !== 'undefined' && screenViewDate ? screenViewDate : new Date().toISOString().split('T')[0]);
+    : (selectedDate || new Date().toISOString().split('T')[0]);
 
   if (!employeeId) {
     alert("Employee ID is missing.");
@@ -457,13 +460,43 @@ const handleMarkAbsent = async (employeeId, reportDate) => {
                             
                             {/* 1. Daily Status Column */}
                             <td style={{ padding: '12px 10px' }}>
-                              <span style={{
-                                display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700',
-                                backgroundColor: hasSubmitted ? '#d1fae5' : '#fee2e2',
-                                color: hasSubmitted ? '#065f46' : '#991b1b'
-                              }}>
-                                {hasSubmitted ? 'Submitted' : 'Pending'}
-                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{
+                                  display: 'inline-block', 
+                                  padding: '4px 10px', 
+                                  borderRadius: '20px', 
+                                  fontSize: '0.75rem', 
+                                  fontWeight: '700',
+                                  backgroundColor: 
+                                    r.submission_status === 'Submitted' || hasSubmitted ? '#d1fae5' :
+                                    r.submission_status === 'Absent' ? '#fee2e2' : '#fef3c7',
+                                  color: 
+                                    r.submission_status === 'Submitted' || hasSubmitted ? '#065f46' :
+                                    r.submission_status === 'Absent' ? '#991b1b' : '#92400e'
+                                }}>
+                                  {r.submission_status || (hasSubmitted ? 'Submitted' : 'Pending')}
+                                </span>
+
+                                {/* Admin "Mark Absent" Action Button for Pending Entries */}
+                                {isAdmin && !hasSubmitted && r.submission_status !== 'Absent' && (
+                                  <button
+                                    onClick={() => handleMarkAbsent(r.employee_id || r.id, r.report_date || r.date)}
+                                    style={{
+                                      background: '#fee2e2',
+                                      color: '#991b1b',
+                                      border: '1px solid #fca5a5',
+                                      borderRadius: '6px',
+                                      padding: '2px 8px',
+                                      fontSize: '0.7rem',
+                                      fontWeight: '700',
+                                      cursor: 'pointer',
+                                      marginLeft: '6px'
+                                    }}
+                                  >
+                                    Mark Absent
+                                  </button>
+                                )}
+                              </div>
                             </td>
 
                             {/* 2. Project / Task Column */}
@@ -490,50 +523,6 @@ const handleMarkAbsent = async (employeeId, reportDate) => {
                             {/* 5. Remarks / Notes Column */}
                             <td style={{ padding: '12px 10px', color: '#555', maxWidth: '250px', wordBreak: 'break-word' }}>
                               {hasSubmitted ? (r.remarks || 'None') : '—'}
-                            </td>
-
-                            {/* Daily Status Column */}
-                            <td style={{ padding: '12px 10px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                
-                                {/* Badge Rendering */}
-                                <span style={{
-                                  display: 'inline-block', 
-                                  padding: '4px 10px', 
-                                  borderRadius: '20px', 
-                                  fontSize: '0.75rem', 
-                                  fontWeight: '700',
-                                  backgroundColor: 
-                                    r.submission_status === 'Submitted' ? '#d1fae5' :
-                                    r.submission_status === 'Absent' ? '#fee2e2' : '#fef3c7',
-                                  color: 
-                                    r.submission_status === 'Submitted' ? '#065f46' :
-                                    r.submission_status === 'Absent' ? '#991b1b' : '#92400e'
-                                }}>
-                                  {r.submission_status || (r.id ? 'Submitted' : 'Pending')}
-                                </span>
-
-                                {/* Admin "Mark Absent" Action Button for Pending Entries */}
-                                {isAdmin && (r.submission_status === 'Pending' || !r.submission_status) && (
-                                  <button
-                                    onClick={() => handleMarkAbsent(r.employee_id || r.id, r.report_date)}
-                                    style={{
-                                      background: '#fee2e2',
-                                      color: '#991b1b',
-                                      border: '1px solid #fca5a5',
-                                      borderRadius: '6px',
-                                      padding: '2px 8px',
-                                      fontSize: '0.7rem',
-                                      fontWeight: '700',
-                                      cursor: 'pointer',
-                                      marginLeft: '6px'
-                                    }}
-                                  >
-                                    Mark Absent
-                                  </button>
-                                )}
-
-                              </div>
                             </td>
                           </tr>
                         );
